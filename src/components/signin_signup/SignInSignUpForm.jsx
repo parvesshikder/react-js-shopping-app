@@ -63,15 +63,13 @@ export default function SignInSignUpForm() {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const onLogin = async (e) => {
+  const onLogin =  (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
+      .then( (userCredential) => {
         // Signed in
         const user = userCredential.user;
         handleSnackbarLogibSuccess();
-        await delay(1500);
-        navigate("/buyer-dashboard");
 
         // open the snackbar
       })
@@ -80,14 +78,13 @@ export default function SignInSignUpForm() {
       });
   };
 
-  const onSignup = async (e) => {
+  const onSignup =  (e) => {
     e.preventDefault();
-    await createUserWithEmailAndPassword(auth, email, password)
+     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
         handleSnackbarSignupSuccess();
-        navigate("/buyer-dashboard");
         // open the snackbar
       })
       .catch((error) => {
@@ -249,19 +246,6 @@ export default function SignInSignUpForm() {
         </div>
       </MDBCard>
 
-      {/* 
-        Log In success 
-      */}
-      <Snackbar
-        open={openSnackbarLS}
-        autoHideDuration={6000}
-        onClose={handleSnackbarLogibSuccess}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <MuiAlert onClose={handleSnackbarLogibSuccess} severity="success">
-          Login successfull!
-        </MuiAlert>
-      </Snackbar>
 
       {/* 
         Log In faled 
@@ -274,20 +258,6 @@ export default function SignInSignUpForm() {
       >
         <MuiAlert onClose={handleSnackbarLoginFailed} severity="error">
           Login Failed!
-        </MuiAlert>
-      </Snackbar>
-
-      {/* 
-        Sign up success 
-      */}
-      <Snackbar
-        open={openSnackbarSS}
-        autoHideDuration={6000}
-        onClose={handleSnackbarSignupSuccess}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <MuiAlert onClose={handleSnackbarSignupSuccess} severity="success">
-          Thanks for Signed Up
         </MuiAlert>
       </Snackbar>
 

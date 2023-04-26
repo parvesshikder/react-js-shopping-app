@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {  signOut } from "firebase/auth";
-import {auth} from "../../../firebase"
+import {auth} from "../../../firebase";
 import {
   MDBNavbar,
   MDBContainer,
@@ -82,7 +82,7 @@ export default function Navbar() {
         </MDBNavbarNav>
         
 
-        <MDBBtn onClick={sellerDashboard}>Become a Seller</MDBBtn>
+        <MDBBtn onClick={sellerDashboard}>Switch to Seller</MDBBtn>
 
         {/* User Profile */}
         <button onClick={toggleShow} className="btn btn-link">

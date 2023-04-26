@@ -6,18 +6,19 @@ import {
   MDBTableHead,
   MDBTableBody,
 } from "mdb-react-ui-kit";
-import Navbar from "../Buyer/Navbar/Navbar";
+import SellerNavbar from "../Navbar/Navbar_Seller";
 
-export default function OrderHistory() {
+export default function NewOrders() {
   return (
     <>
-      <Navbar />
+      <SellerNavbar />
       <MDBTable align="middle" className="mt-5">
         <MDBTableHead>
           <tr>
             <th scope="col">Product details</th>
             <th scope="col">Price</th>
-            <th scope="col">Seller Name</th>
+            <th scope="col">Buyer Name</th>
+            <th scope="col">Address & Contact Details</th>
             <th scope="col">Action</th>
           </tr>
         </MDBTableHead>
@@ -43,13 +44,19 @@ export default function OrderHistory() {
               </MDBBadge>
             </td>
             <td>
-              <p className="fw-normal mb-1">Aiman</p>
+              <p className="fw-normal mb-1">ME</p>
               
             </td>
             
             <td>
               <MDBBtn color="link" rounded size="sm">
-                Delete
+                +601111111111, UTM Block - A
+              </MDBBtn>
+            </td>
+
+            <td>
+              <MDBBtn color="link" rounded size="sm">
+                Mark as Sold
               </MDBBtn>
             </td>
           </tr>

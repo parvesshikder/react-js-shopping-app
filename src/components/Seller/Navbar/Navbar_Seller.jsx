@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import {  signOut } from "firebase/auth";
+import {auth} from "../../../firebase";
 import {
   MDBNavbar,
   MDBContainer,
@@ -33,10 +34,17 @@ export default function SellerNavbar() {
   const navigate = useNavigate();
 
   {
+    /* Go to new order page */
+  }
+  const neworders = () => {
+    navigate("/new-orders"); 
+  };
+
+  {
     /* Go to order history page */
   }
-  const viewOrderPage = () => {
-    navigate("/order-history-page");
+  const viewProductHistory = () => {
+    navigate("/product-history"); 
   };
 
   {
@@ -53,6 +61,16 @@ export default function SellerNavbar() {
   const buyerDashboard = () => {
     navigate("/buyer-dashboard");
   };
+
+  const handleLogout = () => {               
+    signOut(auth).then(() => {
+    // Sign-out successful.
+        navigate("/");
+        console.log("Signed out successfully")
+    }).catch((error) => {
+    // An error happened.
+    });
+}
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -79,16 +97,16 @@ export default function SellerNavbar() {
           {/* New Oade */}
           <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
             <MDBNavbarLink href="#">
-            <MDBBtn className="btn-success " onClick={sellerDashboard}>New Oders</MDBBtn>
+            <MDBBtn className="btn-success " onClick={neworders}>New Oders</MDBBtn>
             </MDBNavbarLink>
           </MDBNavbarItem>
         </MDBNavbarNav>
 
-        <MDBBtn className="me-4 btn-warning " onClick={viewOrderPage}>History of Selling</MDBBtn>
+        <MDBBtn className="me-4 btn-warning " onClick={viewProductHistory}>History of Selling</MDBBtn>
 
 
         
-        <MDBBtn onClick={buyerDashboard}>Become a buyer</MDBBtn>
+        <MDBBtn onClick={buyerDashboard}>Switch to buyer</MDBBtn>
 
         {/* User Profile */}
         <button onClick={toggleShow} className="btn btn-link">
@@ -130,7 +148,7 @@ export default function SellerNavbar() {
               </div>
             </MDBModalBody>
             <MDBModalFooter>
-              <MDBBtn outline color="info" onClick={toggleShow}>
+              <MDBBtn outline color="info" onClick={handleLogout}>
                 Log Out
               </MDBBtn>
               {/* <MDBBtn outline color="info" onClick={toggleShow}>
