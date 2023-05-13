@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { ProductContext } from "./ProductContext";
 
 import {
   MDBContainer,
@@ -14,12 +15,10 @@ import {
   MDBCardFooter,
 } from "mdb-react-ui-kit";
 
-function Products({ products }) {
+function Products() {
   const [query, setQuery] = useState("");
-  const [cartItems, setCartItems] = useState([]);
-  const handleAddToCart = (product) => {
-    setCartItems((prevCartItems) => [...prevCartItems, product]);
-  }
+  const [products] = useContext(ProductContext);
+  
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -134,7 +133,7 @@ function Products({ products }) {
                   </Link>
                   <MDBCardFooter>
                     <div className="d-flex justify-content-between align-items-center pb-1 mb-2">
-                      <MDBBtn color="warning" onClick={() => handleAddToCart(props)}>Add to Card</MDBBtn>
+                      <MDBBtn color="warning" >Add to Card</MDBBtn>
                       <MDBBtn color="primary">Buy now</MDBBtn>
                     </div>
                   </MDBCardFooter>

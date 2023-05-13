@@ -1,12 +1,12 @@
 import Navbar from "./Navbar/Navbar"
 import Products from "./Products"
 
-export default function Dashboard({products}) {
+export default function Dashboard() {
     return (
         <>
             <Navbar />
             <>
-            <Products products={products} />
+            <Products />
             </>
         </>
     )

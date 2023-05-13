@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Link, Navigate, useNavigate } from "react-router-dom";
 import SignInSignUpPage from "./components/signin_signup/SignInSignUpPage";
 import Dashboard from "./components/Buyer/Dashboard";
 import OrderHistory from "./components/Buyer/Order_History/Order_history";
@@ -11,6 +11,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import CircularProgress from "@mui/material/CircularProgress";
 import NewOrders from "./components/Seller/New orders/New_orders";
+import Context from "./components/signin_signup/Context";
+import { useState, createContext, useContext, useEffect } from "react";
 
 export default function App() {
   const products = [
@@ -35,6 +37,15 @@ export default function App() {
   ];
 
   const [user, loading, error] = useAuthState(auth);
+  const { role, setRoleValue } = useContext(Context);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (role === "Seller") {
+      <Navigate to="/seller-dashboard" replace />
+    } else {
+      <Navigate to="/seller-dashboard" replace/>
+    }
+  }, [role]);
 
   if (loading) {
     return (
@@ -54,12 +65,17 @@ export default function App() {
   return (
     <div className="App">
       <Routes>
-        <Route
-          path="/"
-          element={
-            user ? <Navigate to="/buyer-dashboard" /> : <SignInSignUpPage />
-          }
-        />
+      <Route
+  path="/"
+  element={
+    user ? (
+      role === "Seller" ? <SellerDashboard /> : <Dashboard />
+    ) : (
+      <SignInSignUpPage />
+    )
+  }
+/>
+
         <Route
           path="/buyer-dashboard"
           element={

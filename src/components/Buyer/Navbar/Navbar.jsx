@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {  signOut } from "firebase/auth";
 import {auth} from "../../../firebase";
+import Context from "../../signin_signup/Context";
 import {
   MDBNavbar,
   MDBContainer,
@@ -28,6 +29,7 @@ import userAvater from "../../../assets/user.webp";
 
 export default function Navbar() {
   const [topRightModal, setTopRightModal] = useState(false);
+  const { role, setRoleValue } = useContext(Context);
 
   const toggleShow = () => setTopRightModal(!topRightModal);
 
@@ -49,6 +51,7 @@ export default function Navbar() {
     signOut(auth).then(() => {
     // Sign-out successful.
         navigate("/");
+        setRoleValue("");
         console.log("Signed out successfully")
     }).catch((error) => {
     // An error happened.
@@ -82,7 +85,7 @@ export default function Navbar() {
         </MDBNavbarNav>
         
 
-        <MDBBtn onClick={sellerDashboard}>Switch to Seller</MDBBtn>
+        {/* <MDBBtn onClick={sellerDashboard}>Switch to Seller</MDBBtn> */}
 
         {/* User Profile */}
         <button onClick={toggleShow} className="btn btn-link">

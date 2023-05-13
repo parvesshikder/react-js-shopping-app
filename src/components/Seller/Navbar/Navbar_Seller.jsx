@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {  signOut } from "firebase/auth";
-import {auth} from "../../../firebase";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebase";
+import Context from "../../signin_signup/Context";
 import {
   MDBNavbar,
   MDBContainer,
@@ -28,7 +29,7 @@ import userAvater from "../../../assets/user.webp";
 
 export default function SellerNavbar() {
   const [topRightModal, setTopRightModal] = useState(false);
-
+  const { role, setRoleValue } = useContext(Context);
   const toggleShow = () => setTopRightModal(!topRightModal);
 
   const navigate = useNavigate();
@@ -37,14 +38,14 @@ export default function SellerNavbar() {
     /* Go to new order page */
   }
   const neworders = () => {
-    navigate("/new-orders"); 
+    navigate("/new-orders");
   };
 
   {
     /* Go to order history page */
   }
   const viewProductHistory = () => {
-    navigate("/product-history"); 
+    navigate("/product-history");
   };
 
   {
@@ -54,7 +55,6 @@ export default function SellerNavbar() {
     navigate("/seller-dashboard");
   };
 
-
   {
     /* Go to buyer dashboard */
   }
@@ -62,15 +62,18 @@ export default function SellerNavbar() {
     navigate("/buyer-dashboard");
   };
 
-  const handleLogout = () => {               
-    signOut(auth).then(() => {
-    // Sign-out successful.
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
         navigate("/");
-        console.log("Signed out successfully")
-    }).catch((error) => {
-    // An error happened.
-    });
-}
+        setRoleValue("");
+        console.log("Signed out successfully");
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -84,29 +87,28 @@ export default function SellerNavbar() {
           />
         </button>
 
-        
-
         <MDBNavbarNav>
-        <MDBNavbarItem className="collapse navbar-collapse justify-content-stat ms-3">
+          <MDBNavbarItem className="collapse navbar-collapse justify-content-stat ms-3">
             <MDBNavbarLink href="#">
-            <h3>Selle Dashboard</h3>
+              <h3>Selle Dashboard</h3>
             </MDBNavbarLink>
           </MDBNavbarItem>
-
 
           {/* New Oade */}
           <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
             <MDBNavbarLink href="#">
-            <MDBBtn className="btn-success " onClick={neworders}>New Oders</MDBBtn>
+              <MDBBtn className="btn-success " onClick={neworders}>
+                New Oders
+              </MDBBtn>
             </MDBNavbarLink>
           </MDBNavbarItem>
         </MDBNavbarNav>
 
-        <MDBBtn className="me-4 btn-warning " onClick={viewProductHistory}>History of Selling</MDBBtn>
+        <MDBBtn className="me-4 btn-warning " onClick={viewProductHistory}>
+          History of Selling
+        </MDBBtn>
 
-
-        
-        <MDBBtn onClick={buyerDashboard}>Switch to buyer</MDBBtn>
+        {/* <MDBBtn onClick={buyerDashboard}>Switch to buyer</MDBBtn> */}
 
         {/* User Profile */}
         <button onClick={toggleShow} className="btn btn-link">
@@ -144,7 +146,6 @@ export default function SellerNavbar() {
                   alt="user"
                 />
                 <h2 className="mt-3">User Name</h2>
-                
               </div>
             </MDBModalBody>
             <MDBModalFooter>

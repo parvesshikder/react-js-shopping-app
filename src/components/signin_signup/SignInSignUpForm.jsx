@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -7,6 +7,8 @@ import { auth } from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import Context from "./Context";
+
 import {
   MDBDropdown,
   MDBDropdownMenu,
@@ -29,8 +31,8 @@ import {
 
 export default function SignInSignUpForm() {
   const [loginRegisterActive, setLoginRegisterActive] = useState("login");
-
-  const navigate = useNavigate();
+  const [selectedValue, setSelectedValue] = useState("Buyer");
+  const { role, setRoleValue } = useContext(Context);
 
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
@@ -63,13 +65,14 @@ export default function SignInSignUpForm() {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const onLogin =  (e) => {
+  const onLogin = (e) => {
+    console.log(role)
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then( (userCredential) => {
+      .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
-        handleSnackbarLogibSuccess();
+
+        setRoleValue(selectedValue);
 
         // open the snackbar
       })
@@ -78,9 +81,9 @@ export default function SignInSignUpForm() {
       });
   };
 
-  const onSignup =  (e) => {
+  const onSignup = (e) => {
     e.preventDefault();
-     createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
@@ -91,6 +94,43 @@ export default function SignInSignUpForm() {
         handleSnackbarSignUpFailed();
       });
   };
+
+
+  // form validation
+
+  function validateForm() {
+    // Retrieve input field values
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    var phone = document.getElementById("phone").value;
+    
+    // Validate input field values
+    if (name == "") {
+      alert("Please enter your name");
+      return false;
+    }
+    if (email == "") {
+      alert("Please enter your email");
+      return false;
+    }
+    if (password == "") {
+      alert("Please enter your password");
+      return false;
+    }
+    if (phone == "") {
+      alert("Please enter your phone");
+      return false;
+    }
+    
+    // If all input field values are valid, submit the form
+    document.forms[0].submit();
+  }
+
+  
+
+
+  
 
   return (
     <>
@@ -135,23 +175,28 @@ export default function SignInSignUpForm() {
 
                 <MDBDropdown className="mb-4">
                   <MDBDropdownToggle tag="a" className="btn btn-primary">
-                    Buyer
+                    {selectedValue}
                   </MDBDropdownToggle>
                   <MDBDropdownMenu>
-                    <MDBDropdownItem link>Buyer</MDBDropdownItem>
-                    <MDBDropdownItem link>Seller</MDBDropdownItem>
-                    <MDBDropdownItem link>Admin</MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Buyer")}
+                      active={selectedValue === "Buyer"}
+                    >
+                      Buyer
+                    </MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Seller")}
+                      active={selectedValue === "Seller"}
+                    >
+                      Seller
+                    </MDBDropdownItem>
                   </MDBDropdownMenu>
                 </MDBDropdown>
 
                 <MDBRow className="mb-4">
-                  <MDBCol className="d-flex justify-content-center">
-                    <MDBCheckbox
-                      id="form7Example3"
-                      label="Remember me"
-                      defaultChecked
-                    />
-                  </MDBCol>
+                  
                   <MDBCol>
                     <a href="#!">Forgot password?</a>
                   </MDBCol>
@@ -168,9 +213,13 @@ export default function SignInSignUpForm() {
                     block
                     onClick={async (e) => {
                       setLoading(true);
-                      onLogin(e);
+                     onLogin(e);
                       await delay(1000);
+                      
+                      setRoleValue(selectedValue);
                       setLoading(false);
+                      
+                        // Get the dropdown element
                     }}
                   >
                     LOg In
@@ -180,46 +229,53 @@ export default function SignInSignUpForm() {
             </MDBTabsPane>
             <MDBTabsPane show={loginRegisterActive === "register"}>
               <form>
-                <MDBInput className="mb-4" id="form8Example1" label="Name" />
+                <MDBInput className="mb-4" id="name" label="Name" />
                 <MDBInput
                   className="mb-4"
-                  id="form8Example2"
+                  id="phone"
                   label="Phone Number"
+                  required title="Please enter your phone number"
                 />
                 <MDBInput
                   className="mb-4"
                   type="email"
-                  id="form8Example3"
+                  id="email"
                   label="Email address"
+                  required title="Please enter your email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <MDBInput
                   className="mb-4"
                   type="password"
-                  id="form8Example4"
+                  id="password"
                   label="Password"
+                  required title="Please enter your password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
 
-                <MDBCheckbox
-                  wrapperClass="d-flex justify-content-center mb-4"
-                  id="form8Example6"
-                  label="I have read and agree to the terms"
-                  defaultChecked
-                />
+                
 
                 <MDBDropdown className="mb-4">
                   <MDBDropdownToggle tag="a" className="btn btn-primary">
-                    Buyer
+                    {selectedValue}
                   </MDBDropdownToggle>
                   <MDBDropdownMenu>
-                    <MDBDropdownItem link>Buyer</MDBDropdownItem>
-                    <MDBDropdownItem link>Seller</MDBDropdownItem>
-                    <MDBDropdownItem link>Admin</MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Buyer")}
+                      active={selectedValue === "Buyer"}
+                    >
+                      Buyer
+                    </MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Seller")}
+                      active={selectedValue === "Seller"}
+                    >
+                      Seller
+                    </MDBDropdownItem>
                   </MDBDropdownMenu>
                 </MDBDropdown>
-
-                
 
                 {loading ? (
                   <MDBBtn type="submit" className="mb-4" block>
@@ -228,13 +284,18 @@ export default function SignInSignUpForm() {
                 ) : (
                   <MDBBtn
                     type="submit"
+                    
                     className="mb-4"
                     block
                     onClick={async (e) => {
                       setLoading(true);
                       onSignup(e);
                       await delay(1000);
+                      
+                      validateForm();
+                      setRoleValue(selectedValue);
                       setLoading(false);
+                      
                     }}
                   >
                     LOg In
@@ -245,7 +306,6 @@ export default function SignInSignUpForm() {
           </MDBTabsContent>
         </div>
       </MDBCard>
-
 
       {/* 
         Log In faled 
