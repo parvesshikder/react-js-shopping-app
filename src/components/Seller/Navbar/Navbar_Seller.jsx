@@ -62,13 +62,19 @@ export default function SellerNavbar() {
     navigate("/buyer-dashboard");
   };
 
+  {
+    /* Go to buyer dashboard */
+  }
+  const addProduct = () => {
+    navigate("/add-product");
+  };
+
+
   const handleLogout = () => {
-    signOut(auth)
+    auth
+      .signOut()
       .then(() => {
         // Sign-out successful.
-        navigate("/");
-        setRoleValue("");
-        console.log("Signed out successfully");
       })
       .catch((error) => {
         // An error happened.
@@ -106,6 +112,10 @@ export default function SellerNavbar() {
 
         <MDBBtn className="me-4 btn-warning " onClick={viewProductHistory}>
           History of Selling
+        </MDBBtn>
+
+        <MDBBtn className="me-4 btn-success " onClick={addProduct}>
+          Add New Product
         </MDBBtn>
 
         {/* <MDBBtn onClick={buyerDashboard}>Switch to buyer</MDBBtn> */}

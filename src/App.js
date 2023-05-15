@@ -13,6 +13,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import NewOrders from "./components/Seller/New orders/New_orders";
 import Context from "./components/signin_signup/Context";
 import { useState, createContext, useContext, useEffect } from "react";
+import Cart from "./components/Buyer/Cart/Cart";
+import ProductCart from "./components/Buyer/Cart/ProductCard";
+import AddProduct from "./components/Seller/Add Product/AddProduct";
+import AddNewProduct from "./components/Seller/Add Product/AddNewProduct";
+
 
 export default function App() {
   const products = [
@@ -105,6 +110,14 @@ export default function App() {
         <Route
           path="/new-orders"
           element={user ? <NewOrders /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/product-cart"
+          element={user ? <ProductCart /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/add-product"
+          element={user ? <AddNewProduct /> : <Navigate to="/" />}
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

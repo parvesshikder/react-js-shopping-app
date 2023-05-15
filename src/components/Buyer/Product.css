@@ -1,0 +1,21 @@
+
+
+
+@media (max-width: 767px) {
+    .product-card {
+      margin-bottom: 20px;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 991px) {
+    .product-card {
+      margin-bottom: 30px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .product-card {
+      margin-bottom: 40px;
+    }
+  }
+  

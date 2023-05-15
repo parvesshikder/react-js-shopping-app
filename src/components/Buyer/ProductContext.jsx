@@ -1,34 +1,19 @@
-import React, { createContext, useState } from "react";
+
+import React, { createContext, useState, useEffect } from "react";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export const ProductContext = createContext();
 
 export const ProductProvider = (props) => {
-  const [products] = useState([
-    {
-      id: 1,
-      name: "Belt",
-      price: 10.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-    {
-      id: 2,
-      name: "Shoes",
-      price: 19.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-    {
-      id: 3,
-      name: "Shoes",
-      price: 19.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-  ]);
+  const [products, setProducts] = useState([]);
+  const firestore = getFirestore();
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getDocs(collection(firestore, "products"));
+      setProducts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    fetchData();
+  }, []);
 
   return (
     <ProductContext.Provider value={[products]}>
@@ -36,3 +21,4 @@ export const ProductProvider = (props) => {
     </ProductContext.Provider>
   );
 };
+

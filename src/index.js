@@ -8,24 +8,26 @@ import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import App from "./App";
 import { ProductProvider } from "./components/Buyer/ProductContext";
-import { CartProvider } from "./components/Buyer/Cart/CardContext";
-
 import { ContextProvider } from "./components/signin_signup/Context";
+import { CartProvider } from "./components/Buyer/Cart/CardContext";
+import { SellerProductProvider } from "./components/Seller/SellerProductContext";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
 
 ReactDOM.render(
   <React.StrictMode>
-    
-      <ProductProvider>
-        <ContextProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </ContextProvider>
-      </ProductProvider>
-    
+    <ProductProvider>
+      <SellerProductProvider>
+        <CartProvider>
+          <ContextProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </ContextProvider>
+        </CartProvider>
+      </SellerProductProvider>
+    </ProductProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
