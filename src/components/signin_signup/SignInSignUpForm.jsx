@@ -8,7 +8,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Context from "./Context";
-
+import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
 import {
   MDBDropdown,
   MDBDropdownMenu,
@@ -33,11 +33,13 @@ export default function SignInSignUpForm() {
   const [loginRegisterActive, setLoginRegisterActive] = useState("login");
   const [selectedValue, setSelectedValue] = useState("Buyer");
   const { role, setRoleValue } = useContext(Context);
-
+  const firestore = getFirestore();
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
   }
 
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -81,12 +83,23 @@ export default function SignInSignUpForm() {
       });
   };
 
-  const onSignup = (e) => {
+  const onSignup = async (e) => {
     e.preventDefault();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
+   
+   
+    const userCredential = await  createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        
+          const user = userCredential.user;
+  
+      // Store user data in Firestore
+      const userRef = doc(collection(firestore, "users"), user.uid);
+      await setDoc(userRef, {
+        name: name,
+        email: email,
+        phone: phone,
+        
+      });
         handleSnackbarSignupSuccess();
         // open the snackbar
       })
@@ -229,12 +242,14 @@ export default function SignInSignUpForm() {
             </MDBTabsPane>
             <MDBTabsPane show={loginRegisterActive === "register"}>
               <form>
-                <MDBInput className="mb-4" id="name" label="Name" />
+              <MDBInput className="mb-4" id="name" label="Name" onChange={(e) => setName(e.target.value)}/>
                 <MDBInput
                   className="mb-4"
                   id="phone"
                   label="Phone Number"
-                  required title="Please enter your phone number"
+                  required
+                  title="Please enter your phone number"
+                  onChange={(e) => setPhone(e.target.value)}
                 />
                 <MDBInput
                   className="mb-4"
@@ -332,6 +347,17 @@ export default function SignInSignUpForm() {
       >
         <MuiAlert onClose={handleSnackbarSignUpFailed} severity="error">
           Sign Up Failed!
+        </MuiAlert>
+      </Snackbar>
+
+      <Snackbar
+        open={openSnackbarSS}
+        autoHideDuration={6000}
+        onClose={handleSnackbarSignupSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={handleSnackbarSignupSuccess} severity="error">
+        User created successfully
         </MuiAlert>
       </Snackbar>
     </>

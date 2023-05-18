@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ProductContext } from "../Buyer/ProductContext"; 
 import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../Buyer/Cart/CardContext"; 
 
 
 import {

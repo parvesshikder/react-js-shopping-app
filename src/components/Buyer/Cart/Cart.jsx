@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { CartContext } from "./CardContext";
 import Navbar from "../Navbar/Navbar";
 import { Link } from "react-router-dom";
+import { CartContext } from "./CartContext";
 import {
   MDBContainer,
   MDBRow,
@@ -16,7 +16,7 @@ import {
 } from "mdb-react-ui-kit";
 
 const Cart = () => {
-  const { cartitem, removeItem, clearCart } = useContext(CartContext);
+  const { cartItems, removeItem, totalAmount } = useContext(CartContext);
 
   const handleRemoveItem = (itemId) => {
     removeItem(itemId);
@@ -27,18 +27,18 @@ const Cart = () => {
       <h3 className="text-center mt-5 mb-5">Shopping Cart</h3>
       <MDBContainer>
         <MDBRow className="row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 text-center ">
-          {cartitem.length > 0 ? (
-            cartitem.map((item) => (
+          {cartItems.length > 0 ? (
+            cartItems.map((item) => (
               <MDBCol key={item.id}>
                 <MDBCard>
-                  <Link to={`/products/${item.product.id}`}>
+                  <Link to={`/products/${item.id}`}>
                     <MDBRipple
                       rippleColor="light"
                       rippleTag="div"
                       className="bg-image rounded hover-zoom"
                     >
                       <MDBCardImage
-                        src={item.product.image}
+                        src={item.image}
                         fluid
                         className="w-100"
                         style={{
@@ -50,14 +50,14 @@ const Cart = () => {
                     </MDBRipple>
                     <MDBCardBody>
                       <a href="#!" className="text-reset">
-                        <h5 className="card-title mb-3">{item.product.name}</h5>
+                        <h5 className="card-title mb-3">{item.name}</h5>
                       </a>
                       <a href="#!" className="text-reset">
-                        <p>{item.product.description}</p>
+                        <p>{item.description}</p>
                       </a>
                       <h6 className="mb-3 h4">
                         <MDBBadge color="success" pill>
-                          RM{item.product.price}
+                          RM{item.price}
                         </MDBBadge>
                       </h6>
                     </MDBCardBody>
@@ -73,13 +73,19 @@ const Cart = () => {
                     </div>
                   </MDBCardFooter>
                 </MDBCard>
+                
               </MDBCol>
+              
             ))
           ) : (
             <p>Your cart is empty</p>
           )}
         </MDBRow>
+
+        
       </MDBContainer>
+
+      
     </div>
   );
 };

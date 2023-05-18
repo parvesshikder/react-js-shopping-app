@@ -9,7 +9,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import App from "./App";
 import { ProductProvider } from "./components/Buyer/ProductContext";
 import { ContextProvider } from "./components/signin_signup/Context";
-import { CartProvider } from "./components/Buyer/Cart/CardContext";
+import { CartProvider } from "./components/Buyer/Cart/CartContext";
 import { SellerProductProvider } from "./components/Seller/SellerProductContext";
 
 const rootElement = document.getElementById("root");

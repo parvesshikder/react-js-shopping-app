@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import Context from "../../signin_signup/Context";
-import { CartContext } from "../Cart/CardContext";
+import { CartContext } from "../Cart/CartContext";
 import {
   MDBNavbar,
   MDBContainer,
@@ -30,8 +30,9 @@ import userAvater from "../../../assets/user.webp";
 
 export default function Navbar() {
   const [topRightModal, setTopRightModal] = useState(false);
-  const { role, setRoleValue } = useContext(Context);
-  const { cartitem } = useContext(CartContext);
+  
+  const { userData } = useContext(Context);
+  const { cartItems } = useContext(CartContext);
   const toggleShow = () => setTopRightModal(!topRightModal);
 
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ export default function Navbar() {
                 <MDBBtn onClick={() => cart()}>
                   <MDBIcon fas icon="shopping-cart"></MDBIcon>
                   <MDBBadge pill color="success" className="ms-2">
-                    <i>{cartitem.length}</i>
+                    <i>{cartItems.length}</i>
                   </MDBBadge>
                 </MDBBtn>
               </span>
@@ -131,7 +132,7 @@ export default function Navbar() {
                   src={userAvater}
                   alt="user"
                 />
-                <h2 className="mt-3">User Name</h2>
+                <h2 className="mt-3">{userData?.name}</h2>
                 <MDBBtn onClick={viewOrderPage}>Order history</MDBBtn>
               </div>
             </MDBModalBody>

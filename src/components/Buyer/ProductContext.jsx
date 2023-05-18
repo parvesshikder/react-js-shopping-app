@@ -21,4 +21,3 @@ export const ProductProvider = (props) => {
     </ProductContext.Provider>
   );
 };
-
