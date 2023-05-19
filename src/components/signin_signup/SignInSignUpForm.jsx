@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -73,10 +71,8 @@ export default function SignInSignUpForm() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-
         setRoleValue(selectedValue);
-
-        // open the snackbar
+        handleSnackbarLogibSuccess();
       })
       .catch((error) => {
         handleSnackbarLoginFailed();
@@ -102,45 +98,13 @@ export default function SignInSignUpForm() {
           email: email,
           phone: phone,
         });
-        
+
         handleSnackbarSignupSuccess();
-        // open the snackbar
       })
       .catch((error) => {
         handleSnackbarSignUpFailed();
       });
   };
-
-  // form validation
-
-  function validateForm() {
-    // Retrieve input field values
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
-    var phone = document.getElementById("phone").value;
-
-    // Validate input field values
-    if (name == "") {
-      alert("Please enter your name");
-      return false;
-    }
-    if (email == "") {
-      alert("Please enter your email");
-      return false;
-    }
-    if (password == "") {
-      alert("Please enter your password");
-      return false;
-    }
-    if (phone == "") {
-      alert("Please enter your phone");
-      return false;
-    }
-
-    // If all input field values are valid, submit the form
-    document.forms[0].submit();
-  }
 
   return (
     <>
@@ -224,14 +188,10 @@ export default function SignInSignUpForm() {
                       setLoading(true);
                       onLogin(e);
                       await delay(1000);
-
-                      setRoleValue(selectedValue);
                       setLoading(false);
-
-                      // Get the dropdown element
                     }}
                   >
-                    LOg In
+                    Login
                   </MDBBtn>
                 )}
               </form>
@@ -306,13 +266,10 @@ export default function SignInSignUpForm() {
                       setLoading(true);
                       onSignup(e);
                       await delay(1000);
-
-                      validateForm();
-                      setRoleValue(selectedValue);
                       setLoading(false);
                     }}
                   >
-                    LOg In
+                    Regsiter
                   </MDBBtn>
                 )}
               </form>
@@ -322,7 +279,7 @@ export default function SignInSignUpForm() {
       </MDBCard>
 
       {/* 
-        Log In faled 
+        Log In failed 
       */}
       <Snackbar
         open={openSnackbarLF}
@@ -336,7 +293,7 @@ export default function SignInSignUpForm() {
       </Snackbar>
 
       {/* 
-        Sign up In faled 
+        Sign Up failed 
       */}
       <Snackbar
         open={openSnackbarSF}
@@ -349,16 +306,20 @@ export default function SignInSignUpForm() {
         </MuiAlert>
       </Snackbar>
 
+      {/* 
+        Sign Up success 
+      */}
       <Snackbar
         open={openSnackbarSS}
         autoHideDuration={6000}
         onClose={handleSnackbarSignupSuccess}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MuiAlert onClose={handleSnackbarSignupSuccess} severity="error">
+        <MuiAlert onClose={handleSnackbarSignupSuccess} severity="success">
           User created successfully
         </MuiAlert>
       </Snackbar>
     </>
   );
 }
+

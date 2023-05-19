@@ -1,17 +1,17 @@
 import React, { createContext, useState, useEffect } from "react";
 import { getFirestore, collection, onSnapshot , getDocs} from "firebase/firestore";
 
-export const ProductContext = createContext();
+export const MyOrderContext = createContext();
 
-export const ProductProvider = (props) => {
-  const [products, setProducts] = useState([]);
+export const MyOrderProvider = (props) => {
+  const [myproducts, setMyProducts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const firestore = getFirestore();
-      const snapshot = await getDocs(collection(firestore, "products"));
+      const snapshot = await getDocs(collection(firestore, "myorders"));
       const fetchedProducts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setProducts(fetchedProducts);
+      setMyProducts(fetchedProducts);
     };
 
     fetchData();
@@ -19,17 +19,17 @@ export const ProductProvider = (props) => {
 
   useEffect(() => {
     const firestore = getFirestore();
-    const unsubscribe = onSnapshot(collection(firestore, "products"), (snapshot) => {
+    const unsubscribe = onSnapshot(collection(firestore, "myorders"), (snapshot) => {
       const updatedProducts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setProducts(updatedProducts);
+      setMyProducts(updatedProducts);
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
-    <ProductContext.Provider value={products}>
+    <MyOrderContext.Provider value={myproducts}>
       {props.children}
-    </ProductContext.Provider>
+    </MyOrderContext.Provider>
   );
 };

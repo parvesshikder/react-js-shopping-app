@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Product.css";
 import { CartContext } from "./Cart/CartContext";
 import { ProductContext } from "./ProductContext";
@@ -19,16 +19,22 @@ import {
 function Products() {
   const [query, setQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [products] = useContext(ProductContext);
+  const products = useContext(ProductContext); // Move useContext here
   const { addItem, cartItems, removeItem, totalAmount } =
     useContext(CartContext);
+  const navigate = useNavigate();
+  const viewCartPage = () => {
+    navigate("/product-cart");
+  };
 
   if (!products) {
     return <>Error</>;
   }
 
   const filteredProducts = products.filter(
-    (product) => product.status === "unsold" && product.name.toLowerCase().includes(query.toLowerCase())
+    (product) =>
+      product.status === "unsold" &&
+      product.name.toLowerCase().includes(query.toLowerCase())
   );
   const sortedProducts = filteredProducts.sort((a, b) =>
     sortOrder === "asc" ? a.price - b.price : b.price - a.price
@@ -55,7 +61,7 @@ function Products() {
     return (
       <div className="text-center">
         <h4 className="mt-4 mb-5">
-          <strong>Available Products </strong>
+          <strong>Available Products</strong>
         </h4>
 
         <div className="col-md-8 mx-auto w-25 mt-4 mb-5">
@@ -90,7 +96,7 @@ function Products() {
   return (
     <MDBContainer fluid className="my-5 text-center">
       <h4 className="mt-4 mb-5">
-        <strong>Available Products </strong>
+        <strong>Available Products</strong>
       </h4>
 
       <div className="col-md-8 mx-auto w-25 mt-4 mb-5">
@@ -109,31 +115,28 @@ function Products() {
         <br />
 
         <button
-            className="btn btn-secondary mb-2"
-            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-          >
-            Sort by price {sortOrder === "asc" ? "high to low" : "low to high"}
-          </button>
+          className="btn btn-secondary mb-2"
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
+          Sort by price {sortOrder === "asc" ? "high to low" : "low to high"}
+        </button>
       </div>
 
-      
-          
-
       <MDBRow className="ms-5 me-5">
-        {filteredProducts.map((props) => {
-          const isInCart = cartItems.some((item) => item.id === props.id);
+        {filteredProducts.map((product) => {
+          const isInCart = cartItems.some((item) => item.id === product.id);
 
           return (
-            <MDBCol key={props.id} sm="6" md="4" lg="3" className="mb-4">
+            <MDBCol key={product.id} sm="6" md="4" lg="3" className="mb-4">
               <MDBCard>
-                <Link to={`/products/${props.id}`}>
+                <Link to={`/products/${product.id}`}>
                   <MDBRipple
                     rippleColor="light"
                     rippleTag="div"
                     className="bg-image rounded hover-zoom"
                   >
                     <MDBCardImage
-                      src={props.image}
+                      src={product.image}
                       fluid
                       className="w-100"
                       style={{
@@ -145,14 +148,14 @@ function Products() {
                   </MDBRipple>
                   <MDBCardBody>
                     <a href="#!" className="text-reset">
-                      <h5 className="card-title mb-3">{props.name}</h5>
+                      <h5 className="card-title mb-3">{product.name}</h5>
                     </a>
                     <a href="#!" className="text-reset">
-                      <p>{props.description}</p>
+                      <p>{product.description}</p>
                     </a>
                     <h6 className="mb-3 h4">
                       <MDBBadge color="success" pill>
-                        RM{props.price}
+                        RM{product.price}
                       </MDBBadge>
                     </h6>
                   </MDBCardBody>
@@ -163,7 +166,7 @@ function Products() {
                       <MDBBtn
                         color="warning"
                         onClick={() => {
-                          addItem({ ...props });
+                          addItem({ ...product });
                         }}
                       >
                         Add to Cart
@@ -172,14 +175,22 @@ function Products() {
                       <MDBBtn
                         color="danger"
                         onClick={() => {
-                          removeItem(props.id);
+                          removeItem(product.id);
                         }}
                       >
                         Remove from Cart
                       </MDBBtn>
                     )}
 
-                    <MDBBtn color="primary">Buy now</MDBBtn>
+                    <MDBBtn
+                      color="primary"
+                      onClick={() => {
+                        addItem({ ...product });
+                        viewCartPage();
+                      }}
+                    >
+                      Buy now
+                    </MDBBtn>
                   </div>
                 </MDBCardFooter>
               </MDBCard>

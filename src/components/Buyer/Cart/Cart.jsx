@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import { Link } from "react-router-dom";
 import { CartContext } from "./CartContext";
@@ -21,21 +22,75 @@ import {
   MDBModalContent,
 } from "mdb-react-ui-kit";
 import Context from "../../signin_signup/Context";
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
 
 const Cart = () => {
-  const { cartItems, removeItem, totalAmount } = useContext(CartContext);
+  const { cartItems, removeItem, totalAmount, clearCart } =
+    useContext(CartContext);
 
   const { userData } = useContext(Context);
+  const [address, setAddress] = useState("");
+  const [addressError, setAddressError] = useState(false); // State to track the address input field error
 
   const handleRemoveItem = (itemId) => {
     removeItem(itemId);
+  };
+
+  const navigate = useNavigate();
+
+  const viewOrderPage = () => {
+    navigate("/order-history-page");
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!address) {
+      // If address is not provided, show the error message
+      setAddressError(true);
+      return;
+    }
+
+    try {
+      // Update the status of each product to "sold"
+      for (const item of cartItems) {
+        const updatedProduct = {
+          ...item,
+          status: "pending",
+          buyerName: userData?.name,
+          buyerEmail: userData?.email,
+          buyerPhone: userData?.phone,
+          buyerAddress: address,
+        };
+        await updateProductInFirestore(item.id, updatedProduct);
+      }
+
+      // Call clearCart function to clear the cart items
+      clearCart();
+      toggleShow();
+      viewOrderPage();
+
+      // Additional code for order placement logic goes here
+    } catch (error) {
+      console.error("Error updating product status:", error);
+    }
+  };
+
+  // Function to update a product in Firestore
+  const updateProductInFirestore = async (productId, updatedProductData) => {
+    const firestore = getFirestore();
+    const productRef = doc(firestore, "products", productId);
+
+    try {
+      await updateDoc(productRef, updatedProductData);
+      console.log(`Product ${productId} updated successfully.`);
+    } catch (error) {
+      console.error(`Error updating product ${productId}:`, error);
+    }
   };
 
   const [topRightModal, setTopRightModal] = useState(false);
   const [userDetails, setUserDetails] = useState({});
 
   const toggleShow = () => setTopRightModal(!topRightModal);
-  
 
   return (
     <div>
@@ -120,35 +175,35 @@ const Cart = () => {
 
             <MDBModalBody>
               <div className="text-start col">
-                <p>Name: {userData.name}</p>
-                <p>Email: {userData.email}</p>
-                <p>Phone: {userData.phone}</p>
+                <p>Name: {userData?.name}</p>
+                <p>Email: {userData?.email}</p>
+                <p>Phone: {userData?.phone}</p>
+                <h1></h1>
                 <form>
-                  <div className="form-group">
-                    <label htmlFor="phoneNumber">
-                      Additional Contact Number
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="phoneNumber"
-                      style={{ marginBottom: "1rem" }}
-                    />
-                  </div>
                   <div className="form-group">
                     <label htmlFor="address">Address</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${addressError && "is-invalid"}`}
                       id="address"
                       style={{ marginBottom: "1rem" }}
+                      onChange={(e) => setAddress(e.target.value)}
+                      required
                     />
+                    {addressError && (
+                      <div className="invalid-feedback">Address is required</div>
+                    )}
                   </div>
                 </form>
               </div>
             </MDBModalBody>
             <MDBModalFooter>
-              <MDBBtn outline color="info" style={{ marginRight: "0.5rem" }}>
+              <MDBBtn
+                outline
+                color="info"
+                style={{ marginRight: "0.5rem" }}
+                onClick={handlePlaceOrder}
+              >
                 Place Order
               </MDBBtn>
               <MDBBtn outline color="info" onClick={toggleShow}>

@@ -1,17 +1,38 @@
-import React from "react";
-import {
-  MDBBadge,
-  MDBBtn,
-  MDBTable,
-  MDBTableHead,
-  MDBTableBody,
-} from "mdb-react-ui-kit";
+import React, { useContext } from "react";
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 import SellerNavbar from "../Navbar/Navbar_Seller";
+import { SellerProductContext } from "../SellerProductContext";
+import { updateDoc, doc, getFirestore } from "firebase/firestore"; // Update the import statement for updateDoc and doc functions
 
 export default function NewOrders() {
+  const [products, setProducts] = useContext(SellerProductContext);
+  const firestore = getFirestore();
+
+  // Filter products where status is pending
+  const pendingProducts = products.filter((product) => product.status === "pending");
+
+  // Update product status as sold
+  const markAsSold = async (productId) => {
+    const updatedProducts = products.map((product) => {
+      if (product.id === productId) {
+        return { ...product, status: "sold" };
+      }
+      return product;
+    });
+  
+    // Get the document reference
+    const productRef = doc(firestore, "products", productId);
+  
+    // Update the document with the new status
+    await updateDoc(productRef, { status: "sold" });
+  
+    setProducts(updatedProducts);
+  };
+
   return (
     <>
       <SellerNavbar />
+      <h3 className="m-5">New Orders</h3>
       <MDBTable align="middle" className="mt-5">
         <MDBTableHead>
           <tr>
@@ -23,44 +44,42 @@ export default function NewOrders() {
           </tr>
         </MDBTableHead>
         <MDBTableBody>
-          <tr>
-            <td>
-              <div className="d-flex align-items-center">
-                <img
-                  src="https://img.freepik.com/free-psd/skincare-glass-bottle-mockup-psd-with-box-beauty-product-packaging_53876-115103.jpg"
-                  alt=""
-                  style={{ width: "45px", height: "45px" }}
-                  className="rounded-circle"
-                />
-                <div className="ms-3">
-                  <p className="fw-bold mb-1">Harbar Skin Care</p>
-                  <p className="text-muted mb-0">Best Harbal Sincare Producr</p>
+          {pendingProducts.map((product) => (
+            <tr key={product.id}>
+              <td>
+                <div className="d-flex align-items-center">
+                  <img
+                    src={product.image}
+                    alt=""
+                    style={{ width: "45px", height: "45px" }}
+                    className="rounded-circle"
+                  />
+                  <div className="ms-3">
+                    <p className="fw-bold mb-1">{product.name}</p>
+                    <p className="text-muted mb-0">{product.description}</p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <MDBBadge color="success" pill>
-                RM150
-              </MDBBadge>
-            </td>
-            <td>
-              <p className="fw-normal mb-1">ME</p>
-              
-            </td>
-            
-            <td>
-              <MDBBtn color="link" rounded size="sm">
-                +601111111111, UTM Block - A
-              </MDBBtn>
-            </td>
-
-            <td>
-              <MDBBtn color="link" rounded size="sm">
-                Mark as Sold
-              </MDBBtn>
-            </td>
-          </tr>
-          
+              </td>
+              <td>
+                <MDBBadge color="success" pill>
+                  {product.price}
+                </MDBBadge>
+              </td>
+              <td>
+                <p className="fw-normal mb-1">{product.buyerName}</p>
+              </td>
+              <td>
+                <MDBBtn color="link" rounded size="sm">
+                  {product.buyerPhone}, {product.buyerAddress}
+                </MDBBtn>
+              </td>
+              <td>
+                <MDBBtn color="link" rounded size="sm" onClick={() => markAsSold(product.id)}>
+                  Mark as Sold
+                </MDBBtn>
+              </td>
+            </tr>
+          ))}
         </MDBTableBody>
       </MDBTable>
     </>
