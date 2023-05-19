@@ -62,7 +62,17 @@ function AddProduct() {
               sellerName,
               sellerAddress,
               sellerPhone,
-              userEmail, // add user email to the product document
+              userEmail,
+              status : "unsold",
+              date: new Date().toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              }),
+              buyerName: "none",
             });
             console.log("Product added to Firestore!");
             // reset the form fields

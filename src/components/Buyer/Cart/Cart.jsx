@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Navbar from "../Navbar/Navbar";
 import { Link } from "react-router-dom";
 import { CartContext } from "./CartContext";
@@ -13,14 +13,29 @@ import {
   MDBBtn,
   MDBRipple,
   MDBCardFooter,
+  MDBModal,
+  MDBModalHeader,
+  MDBModalBody,
+  MDBModalFooter,
+  MDBModalDialog,
+  MDBModalContent,
 } from "mdb-react-ui-kit";
+import Context from "../../signin_signup/Context";
 
 const Cart = () => {
   const { cartItems, removeItem, totalAmount } = useContext(CartContext);
 
+  const { userData } = useContext(Context);
+
   const handleRemoveItem = (itemId) => {
     removeItem(itemId);
   };
+
+  const [topRightModal, setTopRightModal] = useState(false);
+  const [userDetails, setUserDetails] = useState({});
+
+  const toggleShow = () => setTopRightModal(!topRightModal);
+  
 
   return (
     <div>
@@ -73,19 +88,76 @@ const Cart = () => {
                     </div>
                   </MDBCardFooter>
                 </MDBCard>
-                
               </MDBCol>
-              
             ))
           ) : (
             <p>Your cart is empty</p>
           )}
         </MDBRow>
+        {cartItems.length > 0 && (
+          <div className="text-center mt-4">
+            <MDBBtn color="primary" onClick={toggleShow}>
+              Checkout
+            </MDBBtn>
 
-        
+            <br />
+            <br />
+          </div>
+        )}
       </MDBContainer>
 
-      
+      <MDBModal
+        animationDirection="right"
+        show={topRightModal}
+        tabIndex="-1"
+        setShow={setTopRightModal}
+      >
+        <MDBModalDialog position="top-right" side>
+          <MDBModalContent>
+            <MDBModalHeader className="bg-primary text-white">
+              <h3 className="text-center mx-auto">Checkout</h3>
+            </MDBModalHeader>
+
+            <MDBModalBody>
+              <div className="text-start col">
+                <p>Name: {userData.name}</p>
+                <p>Email: {userData.email}</p>
+                <p>Phone: {userData.phone}</p>
+                <form>
+                  <div className="form-group">
+                    <label htmlFor="phoneNumber">
+                      Additional Contact Number
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="phoneNumber"
+                      style={{ marginBottom: "1rem" }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="address">Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="address"
+                      style={{ marginBottom: "1rem" }}
+                    />
+                  </div>
+                </form>
+              </div>
+            </MDBModalBody>
+            <MDBModalFooter>
+              <MDBBtn outline color="info" style={{ marginRight: "0.5rem" }}>
+                Place Order
+              </MDBBtn>
+              <MDBBtn outline color="info" onClick={toggleShow}>
+                Close
+              </MDBBtn>
+            </MDBModalFooter>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
     </div>
   );
 };
