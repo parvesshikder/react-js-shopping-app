@@ -34,7 +34,7 @@ function AddProduct() {
     uploadFiles(file);
   };
 
-  const uploadFiles = (file) => {
+  const uploadFiles = (file) => { 
     //
     if (!file) return;
     const sotrageRef = ref(storage, `files/${file.name}`);

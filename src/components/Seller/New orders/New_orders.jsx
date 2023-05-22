@@ -1,17 +1,42 @@
-import React, { useContext } from "react";
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
+import React, { useContext, useEffect } from "react";
+import {
+  MDBBadge,
+  MDBBtn,
+  MDBTable,
+  MDBTableHead,
+  MDBTableBody,
+} from "mdb-react-ui-kit";
 import SellerNavbar from "../Navbar/Navbar_Seller";
 import { SellerProductContext } from "../SellerProductContext";
-import { updateDoc, doc, getFirestore } from "firebase/firestore"; // Update the import statement for updateDoc and doc functions
+import { updateDoc, doc, getFirestore } from "firebase/firestore";
+import { NewOrderCountContext } from "./NewOrderCountContext"; 
+import { onSnapshot, collection, query, where } from "firebase/firestore";
 
 export default function NewOrders() {
   const [products, setProducts] = useContext(SellerProductContext);
+  const [newOrderCount, setNewOrderCount] = useContext(NewOrderCountContext);
   const firestore = getFirestore();
 
-  // Filter products where status is pending
-  const pendingProducts = products.filter((product) => product.status === "pending");
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(firestore, "products"),
+        where("status", "==", "pending")
+      ),
+      (snapshot) => {
+        const updatedProducts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProducts(updatedProducts);
+        setNewOrderCount(updatedProducts.length);
+      }
+    );
+  
+    // Cleanup the listener when the component is unmounted
+    return () => unsubscribe();
+  }, [firestore, setProducts, setNewOrderCount]);
 
-  // Update product status as sold
   const markAsSold = async (productId) => {
     const updatedProducts = products.map((product) => {
       if (product.id === productId) {
@@ -19,20 +44,23 @@ export default function NewOrders() {
       }
       return product;
     });
-  
-    // Get the document reference
+
     const productRef = doc(firestore, "products", productId);
-  
-    // Update the document with the new status
+
     await updateDoc(productRef, { status: "sold" });
-  
+
     setProducts(updatedProducts);
   };
+
+  const pendingProducts = products.filter(
+    (product) => product.status === "pending"
+  );
 
   return (
     <>
       <SellerNavbar />
       <h3 className="m-5">New Orders</h3>
+      <p>Total New Orders: {newOrderCount}</p>
       <MDBTable align="middle" className="mt-5">
         <MDBTableHead>
           <tr>
@@ -74,7 +102,12 @@ export default function NewOrders() {
                 </MDBBtn>
               </td>
               <td>
-                <MDBBtn color="link" rounded size="sm" onClick={() => markAsSold(product.id)}>
+                <MDBBtn
+                  color="link"
+                  rounded
+                  size="sm"
+                  onClick={() => markAsSold(product.id)}
+                >
                   Mark as Sold
                 </MDBBtn>
               </td>

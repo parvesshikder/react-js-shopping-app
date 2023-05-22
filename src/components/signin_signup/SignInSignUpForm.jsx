@@ -1,12 +1,17 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Context from "./Context";
 import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
+
 import {
   MDBDropdown,
   MDBDropdownMenu,
@@ -35,6 +40,23 @@ export default function SignInSignUpForm() {
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
   }
+
+  //RESET PASS
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [resetEmailError, setResetEmailError] = useState(null);
+
+  const handleResetPassword = async () => {
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetEmailSent(true);
+      setResetEmailError(null);
+    } catch (error) {
+      setResetEmailSent(false);
+      setResetEmailError(error.message);
+    }
+  };
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -171,9 +193,38 @@ export default function SignInSignUpForm() {
 
                 <MDBRow className="mb-4">
                   <MDBCol>
-                    <a href="#!">Forgot password?</a>
+                    <a href="#!" onClick={() => setShowForgotPassword(true)}>
+                      Forgot password?
+                    </a>
                   </MDBCol>
                 </MDBRow>
+
+                {/* Forgot Password Form */}
+                {showForgotPassword && (
+                  <form>
+                    <MDBInput
+                      className="mb-4"
+                      type="email"
+                      id="resetEmail"
+                      label="Email address"
+                      required
+                      title="Please enter your email"
+                      onChange={(e) => setResetEmail(e.target.value)}
+                    />
+
+                    <MDBBtn
+                      type="submit"
+                      className="mb-4"
+                      block
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        handleResetPassword();
+                      }}
+                    >
+                      Reset Password
+                    </MDBBtn>
+                  </form>
+                )}
 
                 {loading ? (
                   <MDBBtn type="submit" className="mb-4" block>
@@ -319,7 +370,30 @@ export default function SignInSignUpForm() {
           User created successfully
         </MuiAlert>
       </Snackbar>
+
+      {/* Password Reset Success */}
+      <Snackbar
+        open={resetEmailSent}
+        autoHideDuration={6000}
+        onClose={() => setResetEmailSent(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={() => setResetEmailSent(false)} severity="success">
+          Password reset email sent. Please check your inbox.
+        </MuiAlert>
+      </Snackbar>
+
+      {/* Password Reset Error */}
+      <Snackbar
+        open={resetEmailError !== null}
+        autoHideDuration={6000}
+        onClose={() => setResetEmailError(null)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={() => setResetEmailError(null)} severity="error">
+          {resetEmailError}
+        </MuiAlert>
+      </Snackbar>
     </>
   );
 }
-

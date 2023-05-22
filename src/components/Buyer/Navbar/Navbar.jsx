@@ -40,7 +40,7 @@ export default function Navbar() {
   const viewOrderPage = () => {
     navigate("/order-history-page");
   };
-
+ 
   const buyerDashboard = () => {
     navigate("/buyer-dashboard");
   };
