@@ -24,16 +24,12 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
-  
-     if (role === "Seller") {
+    if (role === "Seller" && emailVerified == true ) {
       <Navigate to="/seller-dashboard" replace />;
-    } else {
+    } else if(role === "Buyer" && emailVerified == true) {
       <Navigate to="/seller-dashboard" replace />;
     }
   }, [role]);
-
- 
 
   if (loading) {
     return (
@@ -56,7 +52,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            user && emailVerified ? (
+            user && emailVerified == true ? (
               role === "Seller" ? (
                 <SellerDashboard />
               ) : (
@@ -70,35 +66,35 @@ export default function App() {
 
         <Route
           path="/buyer-dashboard"
-          element={user ? <Dashboard user={user} /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <Dashboard user={user} /> : <Navigate to="/" />}
         />
         <Route
           path="/seller-dashboard"
-          element={user ? <SellerDashboard /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <SellerDashboard /> : <Navigate to="/" />}
         />
         <Route
           path="/order-history-page"
-          element={user ? <OrderHistory /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <OrderHistory /> : <Navigate to="/" />}
         />
         <Route
           path="/own-products"
-          element={user ? <OwnProducts /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <OwnProducts /> : <Navigate to="/" />}
         />
         <Route
           path="/product-history"
-          element={user ? <ProductHistory /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <ProductHistory /> : <Navigate to="/" />}
         />
         <Route
           path="/new-orders"
-          element={user ? <NewOrders /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <NewOrders /> : <Navigate to="/" />}
         />
         <Route
           path="/product-cart"
-          element={user ? <ProductCart /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <ProductCart /> : <Navigate to="/" />}
         />
         <Route
           path="/add-product"
-          element={user ? <AddNewProduct /> : <Navigate to="/" />}
+          element={user && emailVerified == true ? <AddNewProduct /> : <Navigate to="/" />}
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

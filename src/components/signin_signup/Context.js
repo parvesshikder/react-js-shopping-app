@@ -7,7 +7,7 @@ const Context = createContext();
 export function ContextProvider(props) {
   const [role, setRole] = useState("");
   const [userData, setUserData] = useState(null);
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(null);
 
   // function to set the role value based on the user's role
   const setRoleValue = (userRole) => {
