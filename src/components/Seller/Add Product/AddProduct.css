@@ -1,0 +1,66 @@
+.add-product-form {
+    background-color: #f5f5f5;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .add-product-form label {
+    font-weight: bold;
+  }
+  
+  .add-product-form input[type="text"],
+  .add-product-form input[type="number"],
+  .add-product-form input[type="file"],
+  .add-product-form textarea {
+    border-radius: 10px;
+    border: none;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+    color: #333333;
+    width: 100%;
+  }
+  
+  .add-product-form input[type="file"] {
+    padding: 20px;
+  }
+  
+  .add-product-form .file-path-wrapper {
+    margin-top: 10px;
+  }
+  
+  .add-product-form button[type="submit"] {
+    border-radius: 10px;
+    font-weight: bold;
+    width: 100%;
+  }
+  
+  @media (min-width: 576px) {
+    .add-product-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .add-product-form {
+      max-width: 700px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .add-product-form {
+      max-width: 900px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .add-product-form {
+      max-width: 1100px;
+    }
+  }
+  

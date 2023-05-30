@@ -1,8 +1,9 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {  signOut } from "firebase/auth";
-import {auth} from "../../../firebase";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebase";
 import Context from "../../signin_signup/Context";
+import { CartContext } from "../Cart/CartContext";
 import {
   MDBNavbar,
   MDBContainer,
@@ -29,8 +30,9 @@ import userAvater from "../../../assets/user.webp";
 
 export default function Navbar() {
   const [topRightModal, setTopRightModal] = useState(false);
-  const { role, setRoleValue } = useContext(Context);
-
+  
+  const { userData } = useContext(Context);
+  const { cartItems } = useContext(CartContext);
   const toggleShow = () => setTopRightModal(!topRightModal);
 
   const navigate = useNavigate();
@@ -38,25 +40,29 @@ export default function Navbar() {
   const viewOrderPage = () => {
     navigate("/order-history-page");
   };
-
+ 
   const buyerDashboard = () => {
     navigate("/buyer-dashboard");
+  };
+
+  const cart = () => {
+    navigate("/product-cart");
   };
 
   const sellerDashboard = () => {
     navigate("/seller-dashboard");
   };
 
-  const handleLogout = () => {               
-    signOut(auth).then(() => {
-    // Sign-out successful.
-        navigate("/");
-        setRoleValue("");
-        console.log("Signed out successfully")
-    }).catch((error) => {
-    // An error happened.
-    });
-}
+  const handleLogout = () => {
+    auth
+      .signOut()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -72,18 +78,22 @@ export default function Navbar() {
 
         <MDBNavbarNav>
           {/* Shopping Card */}
-          <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
-            <MDBNavbarLink href="#">
-              <MDBBadge pill color="danger">
-                !
-              </MDBBadge>
+          <MDBNavbarItem className=" navbar-collapse justify-content-end me-3">
+            <MDBNavbarLink
+              href="#"
+              className="d-flex justify-content-end align-items-center"
+            >
               <span>
-                <MDBIcon fas icon="shopping-cart"></MDBIcon>
+                <MDBBtn onClick={() => cart()}>
+                  <MDBIcon fas icon="shopping-cart"></MDBIcon>
+                  <MDBBadge pill color="success" className="ms-2">
+                    <i>{cartItems.length}</i>
+                  </MDBBadge>
+                </MDBBtn>
               </span>
             </MDBNavbarLink>
           </MDBNavbarItem>
         </MDBNavbarNav>
-        
 
         {/* <MDBBtn onClick={sellerDashboard}>Switch to Seller</MDBBtn> */}
 
@@ -122,7 +132,9 @@ export default function Navbar() {
                   src={userAvater}
                   alt="user"
                 />
-                <h2 className="mt-3">User Name</h2>
+                <h2 className="mt-3">{userData?.name}</h2>
+                <p className="mt-3">{userData?.email}</p>
+                <p className="mt-3">{userData?.phone}</p>
                 <MDBBtn onClick={viewOrderPage}>Order history</MDBBtn>
               </div>
             </MDBModalBody>

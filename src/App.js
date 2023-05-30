@@ -13,39 +13,27 @@ import CircularProgress from "@mui/material/CircularProgress";
 import NewOrders from "./components/Seller/New orders/New_orders";
 import Context from "./components/signin_signup/Context";
 import { useState, createContext, useContext, useEffect } from "react";
+import Cart from "./components/Buyer/Cart/Cart";
+import ProductCart from "./components/Buyer/Cart/ProductCard";
+import AddProduct from "./components/Seller/Add Product/AddProduct";
+import AddNewProduct from "./components/Seller/Add Product/AddNewProduct";
 
 export default function App() {
-  const products = [
-    {
-      id: 1,
-      name: "Belt",
-      price: 10.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-    {
-      id: 2,
-      name: "Shoes",
-      price: 19.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-
-    // add more products as needed
-  ];
-
   const [user, loading, error] = useAuthState(auth);
-  const { role, setRoleValue } = useContext(Context);
+  const { role, setRoleValue, emailVerified } = useContext(Context);
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (role === "Seller") {
-      <Navigate to="/seller-dashboard" replace />
+    
+  
+     if (role === "Seller") {
+      <Navigate to="/seller-dashboard" replace />;
     } else {
-      <Navigate to="/seller-dashboard" replace/>
+      <Navigate to="/seller-dashboard" replace />;
     }
   }, [role]);
+
+ 
 
   if (loading) {
     return (
@@ -65,26 +53,24 @@ export default function App() {
   return (
     <div className="App">
       <Routes>
-      <Route
-  path="/"
-  element={
-    user ? (
-      role === "Seller" ? <SellerDashboard /> : <Dashboard />
-    ) : (
-      <SignInSignUpPage />
-    )
-  }
-/>
+        <Route
+          path="/"
+          element={
+            user && emailVerified ? (
+              role === "Seller" ? (
+                <SellerDashboard />
+              ) : (
+                <Dashboard />
+              )
+            ) : (
+              <SignInSignUpPage />
+            )
+          }
+        />
 
         <Route
           path="/buyer-dashboard"
-          element={
-            user ? (
-              <Dashboard products={products} user={user} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
+          element={user ? <Dashboard user={user} /> : <Navigate to="/" />}
         />
         <Route
           path="/seller-dashboard"
@@ -105,6 +91,14 @@ export default function App() {
         <Route
           path="/new-orders"
           element={user ? <NewOrders /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/product-cart"
+          element={user ? <ProductCart /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/add-product"
+          element={user ? <AddNewProduct /> : <Navigate to="/" />}
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

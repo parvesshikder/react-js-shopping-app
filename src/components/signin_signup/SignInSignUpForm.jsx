@@ -1,13 +1,17 @@
-import React, { useState } from "react";
-import { useContext } from 'react';
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { auth } from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Context from "./Context";
+import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 import {
   MDBDropdown,
@@ -32,12 +36,31 @@ import {
 export default function SignInSignUpForm() {
   const [loginRegisterActive, setLoginRegisterActive] = useState("login");
   const [selectedValue, setSelectedValue] = useState("Buyer");
-  const { role, setRoleValue } = useContext(Context);
-
+  const { role, setRoleValue, emailVerified, setEmailVerified  } = useContext(Context);
+  const firestore = getFirestore();
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
   }
 
+  //RESET PASS
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [resetEmailError, setResetEmailError] = useState(null);
+
+  const handleResetPassword = async () => {
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetEmailSent(true);
+      setResetEmailError(null);
+    } catch (error) {
+      setResetEmailSent(false);
+      setResetEmailError(error.message);
+    }
+  };
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,71 +89,55 @@ export default function SignInSignUpForm() {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const onLogin = (e) => {
-    console.log(role)
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-
-        setRoleValue(selectedValue);
-
-        // open the snackbar
+        if (userCredential.user.emailVerified) {
+          setRoleValue(selectedValue);
+          setEmailVerified(true);
+          handleSnackbarLogibSuccess();
+        } else {
+          handleSnackbarLoginFailed();
+        }
       })
       .catch((error) => {
         handleSnackbarLoginFailed();
       });
   };
+  
 
-  const onSignup = (e) => {
+  const onSignup = async (e) => {
     e.preventDefault();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+      .then(async (userCredential) => {
+        setRoleValue(selectedValue);
         const user = userCredential.user;
+
+        //email varification
+        await sendEmailVerification(user);
+
+
+
+        // Store user data in Firestore
+        const userRef = doc(collection(firestore, "users"), user.uid);
+        await setDoc(userRef, {
+          name: name,
+          email: email,
+          phone: phone,
+        });
+
         handleSnackbarSignupSuccess();
-        // open the snackbar
       })
       .catch((error) => {
         handleSnackbarSignUpFailed();
       });
   };
-
-
-  // form validation
-
-  function validateForm() {
-    // Retrieve input field values
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
-    var phone = document.getElementById("phone").value;
-    
-    // Validate input field values
-    if (name == "") {
-      alert("Please enter your name");
-      return false;
-    }
-    if (email == "") {
-      alert("Please enter your email");
-      return false;
-    }
-    if (password == "") {
-      alert("Please enter your password");
-      return false;
-    }
-    if (phone == "") {
-      alert("Please enter your phone");
-      return false;
-    }
-    
-    // If all input field values are valid, submit the form
-    document.forms[0].submit();
-  }
-
-  
-
-
-  
 
   return (
     <>
@@ -196,11 +203,39 @@ export default function SignInSignUpForm() {
                 </MDBDropdown>
 
                 <MDBRow className="mb-4">
-                  
                   <MDBCol>
-                    <a href="#!">Forgot password?</a>
+                    <a href="#!" onClick={() => setShowForgotPassword(true)}>
+                      Forgot password?
+                    </a>
                   </MDBCol>
                 </MDBRow>
+
+                {/* Forgot Password Form */}
+                {showForgotPassword && (
+                  <form>
+                    <MDBInput
+                      className="mb-4"
+                      type="email"
+                      id="resetEmail"
+                      label="Email address"
+                      required
+                      title="Please enter your email"
+                      onChange={(e) => setResetEmail(e.target.value)}
+                    />
+
+                    <MDBBtn
+                      type="submit"
+                      className="mb-4"
+                      block
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        handleResetPassword();
+                      }}
+                    >
+                      Reset Password
+                    </MDBBtn>
+                  </form>
+                )}
 
                 {loading ? (
                   <MDBBtn type="submit" className="mb-4" block>
@@ -213,35 +248,39 @@ export default function SignInSignUpForm() {
                     block
                     onClick={async (e) => {
                       setLoading(true);
-                     onLogin(e);
+                      onLogin(e);
                       await delay(1000);
-                      
-                      setRoleValue(selectedValue);
                       setLoading(false);
-                      
-                        // Get the dropdown element
                     }}
                   >
-                    LOg In
+                    Login
                   </MDBBtn>
                 )}
               </form>
             </MDBTabsPane>
             <MDBTabsPane show={loginRegisterActive === "register"}>
               <form>
-                <MDBInput className="mb-4" id="name" label="Name" />
+                <MDBInput
+                  className="mb-4"
+                  id="name"
+                  label="Name"
+                  onChange={(e) => setName(e.target.value)}
+                />
                 <MDBInput
                   className="mb-4"
                   id="phone"
                   label="Phone Number"
-                  required title="Please enter your phone number"
+                  required
+                  title="Please enter your phone number"
+                  onChange={(e) => setPhone(e.target.value)}
                 />
                 <MDBInput
                   className="mb-4"
                   type="email"
                   id="email"
                   label="Email address"
-                  required title="Please enter your email"
+                  required
+                  title="Please enter your email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <MDBInput
@@ -249,11 +288,10 @@ export default function SignInSignUpForm() {
                   type="password"
                   id="password"
                   label="Password"
-                  required title="Please enter your password"
+                  required
+                  title="Please enter your password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
-
-                
 
                 <MDBDropdown className="mb-4">
                   <MDBDropdownToggle tag="a" className="btn btn-primary">
@@ -284,21 +322,16 @@ export default function SignInSignUpForm() {
                 ) : (
                   <MDBBtn
                     type="submit"
-                    
                     className="mb-4"
                     block
                     onClick={async (e) => {
                       setLoading(true);
                       onSignup(e);
                       await delay(1000);
-                      
-                      validateForm();
-                      setRoleValue(selectedValue);
                       setLoading(false);
-                      
                     }}
                   >
-                    LOg In
+                    Regsiter
                   </MDBBtn>
                 )}
               </form>
@@ -308,7 +341,7 @@ export default function SignInSignUpForm() {
       </MDBCard>
 
       {/* 
-        Log In faled 
+        Log In failed 
       */}
       <Snackbar
         open={openSnackbarLF}
@@ -322,7 +355,7 @@ export default function SignInSignUpForm() {
       </Snackbar>
 
       {/* 
-        Sign up In faled 
+        Sign Up failed 
       */}
       <Snackbar
         open={openSnackbarSF}
@@ -332,6 +365,44 @@ export default function SignInSignUpForm() {
       >
         <MuiAlert onClose={handleSnackbarSignUpFailed} severity="error">
           Sign Up Failed!
+        </MuiAlert>
+      </Snackbar>
+
+      {/* 
+        Sign Up success 
+      */}
+      <Snackbar
+        open={openSnackbarSS}
+        autoHideDuration={6000}
+        onClose={handleSnackbarSignupSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={handleSnackbarSignupSuccess} severity="success">
+        Congratulations! Your account has been created successfully. Please check your email to verify your account.
+        </MuiAlert>
+      </Snackbar>
+
+      {/* Password Reset Success */}
+      <Snackbar
+        open={resetEmailSent}
+        autoHideDuration={6000}
+        onClose={() => setResetEmailSent(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={() => setResetEmailSent(false)} severity="success">
+          Password reset email sent. Please check your inbox.
+        </MuiAlert>
+      </Snackbar>
+
+      {/* Password Reset Error */}
+      <Snackbar
+        open={resetEmailError !== null}
+        autoHideDuration={6000}
+        onClose={() => setResetEmailError(null)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert onClose={() => setResetEmailError(null)} severity="error">
+          {resetEmailError}
         </MuiAlert>
       </Snackbar>
     </>

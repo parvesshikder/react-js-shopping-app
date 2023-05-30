@@ -26,11 +26,14 @@ import {
 
 import logo from "../../../assets/logo.png";
 import userAvater from "../../../assets/user.webp";
+import { NewOrderCountContext } from "../New orders/NewOrderCountContext";
 
 export default function SellerNavbar() {
   const [topRightModal, setTopRightModal] = useState(false);
   const { role, setRoleValue } = useContext(Context);
   const toggleShow = () => setTopRightModal(!topRightModal);
+  const { userData } = useContext(Context);
+  const [newOrderCount] = useContext(NewOrderCountContext);
 
   const navigate = useNavigate();
 
@@ -62,13 +65,19 @@ export default function SellerNavbar() {
     navigate("/buyer-dashboard");
   };
 
+  {
+    /* Go to buyer dashboard */
+  }
+  const addProduct = () => {
+    navigate("/add-product");
+  };
+
+
   const handleLogout = () => {
-    signOut(auth)
+    auth
+      .signOut()
       .then(() => {
         // Sign-out successful.
-        navigate("/");
-        setRoleValue("");
-        console.log("Signed out successfully");
       })
       .catch((error) => {
         // An error happened.
@@ -98,7 +107,10 @@ export default function SellerNavbar() {
           <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
             <MDBNavbarLink href="#">
               <MDBBtn className="btn-success " onClick={neworders}>
-                New Oders
+                New Oders 
+                <MDBBadge pill color="warning" className="ms-2">
+                    <i>{newOrderCount}</i>
+                  </MDBBadge>
               </MDBBtn>
             </MDBNavbarLink>
           </MDBNavbarItem>
@@ -106,6 +118,10 @@ export default function SellerNavbar() {
 
         <MDBBtn className="me-4 btn-warning " onClick={viewProductHistory}>
           History of Selling
+        </MDBBtn>
+
+        <MDBBtn className="me-4 btn-success " onClick={addProduct}>
+          Add New Product
         </MDBBtn>
 
         {/* <MDBBtn onClick={buyerDashboard}>Switch to buyer</MDBBtn> */}
@@ -138,14 +154,16 @@ export default function SellerNavbar() {
               ></MDBBtn>
             </MDBModalHeader>
             <MDBModalBody>
-              <div className="text-center col">
+            <div className="text-center col">
                 <img
                   style={{ width: 60, height: 60 }}
                   className="square rounded-circle border border-3"
                   src={userAvater}
                   alt="user"
                 />
-                <h2 className="mt-3">User Name</h2>
+                <h2 className="mt-3">{userData?.name}</h2>
+                <p className="mt-3">{userData?.email}</p>
+                <p className="mt-3">{userData?.phone}</p>
               </div>
             </MDBModalBody>
             <MDBModalFooter>
