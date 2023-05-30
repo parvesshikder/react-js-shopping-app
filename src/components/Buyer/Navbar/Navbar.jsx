@@ -78,7 +78,7 @@ export default function Navbar() {
 
         <MDBNavbarNav>
           {/* Shopping Card */}
-          <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
+          <MDBNavbarItem className=" navbar-collapse justify-content-end me-3">
             <MDBNavbarLink
               href="#"
               className="d-flex justify-content-end align-items-center"

@@ -40,19 +40,21 @@ function SellerProducts() {
   const db = collection(firestore, "products");
 
   function handleRemoveProduct(productId) {
-    const docRef = doc(db, productId);
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      const docRef = doc(db, productId);
 
-    deleteDoc(docRef)
-      .then(() => {
-        const updatedProducts = products.filter(
-          (product) => product.id !== productId
-        );
-        setProducts(updatedProducts);
-        console.log("Product deleted successfully");
-      })
-      .catch((error) => {
-        console.error("Error deleting product:", error);
-      });
+      deleteDoc(docRef)
+        .then(() => {
+          const updatedProducts = products.filter(
+            (product) => product.id !== productId
+          );
+          setProducts(updatedProducts);
+          console.log("Product deleted successfully");
+        })
+        .catch((error) => {
+          console.error("Error deleting product:", error);
+        });
+    }
   }
 
   const [editingProductId, setEditingProductId] = useState(null);

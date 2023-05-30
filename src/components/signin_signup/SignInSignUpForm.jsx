@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
@@ -88,18 +89,22 @@ export default function SignInSignUpForm() {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const onLogin = (e) => {
-    console.log(role);
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        setRoleValue(selectedValue);
-        handleSnackbarLogibSuccess();
+        if (userCredential.user.emailVerified) {
+          setRoleValue(selectedValue);
+          handleSnackbarLogibSuccess();
+        } else {
+          handleSnackbarLoginFailed();
+        }
       })
       .catch((error) => {
         handleSnackbarLoginFailed();
       });
   };
+  
 
   const onSignup = async (e) => {
     e.preventDefault();
@@ -112,6 +117,9 @@ export default function SignInSignUpForm() {
       .then(async (userCredential) => {
         setRoleValue(selectedValue);
         const user = userCredential.user;
+
+        //email varification
+        await sendEmailVerification(user);
 
         // Store user data in Firestore
         const userRef = doc(collection(firestore, "users"), user.uid);
@@ -367,7 +375,7 @@ export default function SignInSignUpForm() {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MuiAlert onClose={handleSnackbarSignupSuccess} severity="success">
-          User created successfully
+        Congratulations! Your account has been created successfully. Please check your email to verify your account.
         </MuiAlert>
       </Snackbar>
 

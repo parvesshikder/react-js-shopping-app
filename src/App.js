@@ -18,37 +18,15 @@ import ProductCart from "./components/Buyer/Cart/ProductCard";
 import AddProduct from "./components/Seller/Add Product/AddProduct";
 import AddNewProduct from "./components/Seller/Add Product/AddNewProduct";
 
-
 export default function App() {
-  const products = [
-    {
-      id: 1,
-      name: "Belt",
-      price: 10.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-    {
-      id: 2,
-      name: "Shoes",
-      price: 19.99,
-      details: "Product Details",
-      image:
-        "https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/belt.webp",
-    },
-
-    // add more products as needed
-  ];
-
   const [user, loading, error] = useAuthState(auth);
   const { role, setRoleValue } = useContext(Context);
   const navigate = useNavigate();
   useEffect(() => {
-    if (role === "Seller") {
-      <Navigate to="/seller-dashboard" replace />
+     if (role === "Seller") {
+      <Navigate to="/seller-dashboard" replace />;
     } else {
-      <Navigate to="/seller-dashboard" replace/>
+      <Navigate to="/seller-dashboard" replace />;
     }
   }, [role]);
 
@@ -70,26 +48,24 @@ export default function App() {
   return (
     <div className="App">
       <Routes>
-      <Route
-  path="/"
-  element={
-    user ? (
-      role === "Seller" ? <SellerDashboard /> : <Dashboard />
-    ) : (
-      <SignInSignUpPage />
-    )
-  }
-/>
+        <Route
+          path="/"
+          element={
+            user && user.emailVerified ? (
+              role === "Seller" ? (
+                <SellerDashboard />
+              ) : (
+                <Dashboard />
+              )
+            ) : (
+              <SignInSignUpPage />
+            )
+          }
+        />
 
         <Route
           path="/buyer-dashboard"
-          element={
-            user ? (
-              <Dashboard products={products} user={user} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
+          element={user ? <Dashboard user={user} /> : <Navigate to="/" />}
         />
         <Route
           path="/seller-dashboard"
