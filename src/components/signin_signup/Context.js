@@ -7,6 +7,7 @@ const Context = createContext();
 export function ContextProvider(props) {
   const [role, setRole] = useState("");
   const [userData, setUserData] = useState(null);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // function to set the role value based on the user's role
   const setRoleValue = (userRole) => {
@@ -40,7 +41,7 @@ export function ContextProvider(props) {
   }, []);
 
   return (
-    <Context.Provider value={{ role, setRoleValue, userData }}>
+    <Context.Provider value={{ role, setRoleValue, userData, emailVerified, setEmailVerified }}>
       {props.children}
     </Context.Provider>
   );

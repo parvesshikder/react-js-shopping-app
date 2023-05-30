@@ -20,15 +20,20 @@ import AddNewProduct from "./components/Seller/Add Product/AddNewProduct";
 
 export default function App() {
   const [user, loading, error] = useAuthState(auth);
-  const { role, setRoleValue } = useContext(Context);
+  const { role, setRoleValue, emailVerified } = useContext(Context);
   const navigate = useNavigate();
+
   useEffect(() => {
+    
+  
      if (role === "Seller") {
       <Navigate to="/seller-dashboard" replace />;
     } else {
       <Navigate to="/seller-dashboard" replace />;
     }
   }, [role]);
+
+ 
 
   if (loading) {
     return (
@@ -51,7 +56,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            user && user.emailVerified ? (
+            user && emailVerified ? (
               role === "Seller" ? (
                 <SellerDashboard />
               ) : (

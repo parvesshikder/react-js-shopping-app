@@ -36,7 +36,7 @@ import {
 export default function SignInSignUpForm() {
   const [loginRegisterActive, setLoginRegisterActive] = useState("login");
   const [selectedValue, setSelectedValue] = useState("Buyer");
-  const { role, setRoleValue } = useContext(Context);
+  const { role, setRoleValue, emailVerified, setEmailVerified  } = useContext(Context);
   const firestore = getFirestore();
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
@@ -95,6 +95,7 @@ export default function SignInSignUpForm() {
         // Signed in
         if (userCredential.user.emailVerified) {
           setRoleValue(selectedValue);
+          setEmailVerified(true);
           handleSnackbarLogibSuccess();
         } else {
           handleSnackbarLoginFailed();
@@ -120,6 +121,8 @@ export default function SignInSignUpForm() {
 
         //email varification
         await sendEmailVerification(user);
+
+
 
         // Store user data in Firestore
         const userRef = doc(collection(firestore, "users"), user.uid);
