@@ -23,13 +23,16 @@ export default function App() {
   const { role, setRoleValue, emailVerified } = useContext(Context);
   const navigate = useNavigate();
 
+  console.log(emailVerified)
+
   useEffect(() => {
-    if (role === "Seller" && emailVerified == true ) {
+    if (role === "Seller" && emailVerified === true) {
       <Navigate to="/seller-dashboard" replace />;
-    } else if(role === "Buyer" && emailVerified == true) {
+    } else if (role === "Buyer" && emailVerified === true) {
       <Navigate to="/seller-dashboard" replace />;
     }
-  }, [role]);
+  }, [role, emailVerified]);
+  
 
   if (loading) {
     return (
@@ -52,7 +55,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            user && emailVerified == true ? (
+            user && emailVerified === true ? (
               role === "Seller" ? (
                 <SellerDashboard />
               ) : (
@@ -66,37 +69,85 @@ export default function App() {
 
         <Route
           path="/buyer-dashboard"
-          element={user && emailVerified == true ? <Dashboard user={user} /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <Dashboard user={user} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/seller-dashboard"
-          element={user && emailVerified == true ? <SellerDashboard /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <SellerDashboard />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/order-history-page"
-          element={user && emailVerified == true ? <OrderHistory /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <OrderHistory />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/own-products"
-          element={user && emailVerified == true ? <OwnProducts /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <OwnProducts />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/product-history"
-          element={user && emailVerified == true ? <ProductHistory /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <ProductHistory />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/new-orders"
-          element={user && emailVerified == true ? <NewOrders /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <NewOrders />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/product-cart"
-          element={user && emailVerified == true ? <ProductCart /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <ProductCart />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route
           path="/add-product"
-          element={user && emailVerified == true ? <AddNewProduct /> : <Navigate to="/" />}
+          element={
+            user && emailVerified === true ? (
+              <AddNewProduct />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
     </div>
   );

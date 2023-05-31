@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const SellerProductContext = createContext();
@@ -27,14 +27,13 @@ export const SellerProductProvider = (props) => {
   }, [user]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (userEmail) {
-        const q = query(collection(firestore, "products"), where("userEmail", "==", userEmail));
-        const data = await getDocs(q);
-        setProducts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      }
-    };
-    fetchData();
+    if (userEmail) {
+      const q = query(collection(firestore, "products"), where("userEmail", "==", userEmail));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        setProducts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      });
+      return () => unsubscribe();
+    }
   }, [firestore, userEmail]);
 
   return (
