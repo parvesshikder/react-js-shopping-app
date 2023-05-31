@@ -88,6 +88,7 @@ export default function SignInSignUpForm() {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  
   const onLogin = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
