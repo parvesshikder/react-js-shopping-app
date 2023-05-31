@@ -7,7 +7,7 @@ const Context = createContext();
 export function ContextProvider(props) {
   const [role, setRole] = useState("");
   const [userData, setUserData] = useState(null);
-  const [emailVerified, setEmailVerified] = useState(null);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // function to set the role value based on the user's role
   const setRoleValue = (userRole) => {
@@ -32,6 +32,10 @@ export function ContextProvider(props) {
           querySnapshot.forEach((doc) => {
             const data = doc.data();
             setUserData(data);
+            if(user?.emailVerified){
+              setEmailVerified(true);
+            }
+            
           });
         });
       }

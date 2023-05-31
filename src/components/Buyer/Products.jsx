@@ -129,7 +129,7 @@ function Products() {
           return (
             <MDBCol key={product.id} sm="6" md="4" lg="3" className="mb-4">
               <MDBCard>
-                <Link to={`/products/${product.id}`}>
+                {/* <Link to={`/products/${product.id}`}> */}
                   <MDBRipple
                     rippleColor="light"
                     rippleTag="div"
@@ -147,19 +147,23 @@ function Products() {
                     />
                   </MDBRipple>
                   <MDBCardBody>
-                    <a href="#!" className="text-reset">
+                   
                       <h5 className="card-title mb-3">{product.name}</h5>
-                    </a>
-                    <a href="#!" className="text-reset">
+                    
+                    
                       <p>{product.description}</p>
-                    </a>
+                    
                     <h6 className="mb-3 h4">
                       <MDBBadge color="success" pill>
                         RM{product.price}
                       </MDBBadge>
                     </h6>
+                    <br />
+                    <p>Seller Name: {product.sellerName} </p>
+                    <p>Seller Phone:  {product.sellerPhone}</p>
+                    <p>Seller Address: {product.sellerAddress} </p>
                   </MDBCardBody>
-                </Link>
+                {/* </Link> */}
                 <MDBCardFooter>
                   <div className="d-flex justify-content-between align-items-center pb-1 mb-2">
                     {!isInCart ? (
