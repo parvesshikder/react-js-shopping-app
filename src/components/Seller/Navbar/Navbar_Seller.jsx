@@ -97,14 +97,14 @@ export default function SellerNavbar() {
         </button>
 
         <MDBNavbarNav>
-          <MDBNavbarItem className="collapse navbar-collapse justify-content-stat ms-3">
+          <MDBNavbarItem className=" justify-content-stat ms-3">
             <MDBNavbarLink href="#">
               <h3>Selle Dashboard</h3>
             </MDBNavbarLink>
           </MDBNavbarItem>
 
           {/* New Oade */}
-          <MDBNavbarItem className="collapse navbar-collapse justify-content-end me-3">
+          <MDBNavbarItem className=" navbar-collapse justify-content-end me-3">
             <MDBNavbarLink href="#">
               <MDBBtn className="btn-success " onClick={neworders}>
                 New Oders 
