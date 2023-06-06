@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   MDBBadge,
   MDBBtn,
@@ -9,33 +9,18 @@ import {
 import SellerNavbar from "../Navbar/Navbar_Seller";
 import { SellerProductContext } from "../SellerProductContext";
 import { updateDoc, doc, getFirestore } from "firebase/firestore";
-import { NewOrderCountContext } from "./NewOrderCountContext"; 
+import { NewOrderCountContext } from "./NewOrderCountContext";
 import { onSnapshot, collection, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function NewOrders() {
   const [products, setProducts] = useContext(SellerProductContext);
   const [newOrderCount, setNewOrderCount] = useContext(NewOrderCountContext);
+  const [userEmail] = useContext(SellerProductContext);
   const firestore = getFirestore();
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(firestore, "products"),
-        where("status", "==", "pending")
-      ),
-      (snapshot) => {
-        const updatedProducts = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProducts(updatedProducts);
-        setNewOrderCount(updatedProducts.length);
-      }
-    );
-  
-    // Cleanup the listener when the component is unmounted
-    return () => unsubscribe();
-  }, [firestore, setProducts, setNewOrderCount]);
+
+
 
   const markAsSold = async (productId) => {
     const updatedProducts = products.map((product) => {
@@ -55,6 +40,7 @@ export default function NewOrders() {
   const pendingProducts = products.filter(
     (product) => product.status === "pending"
   );
+  setNewOrderCount(pendingProducts.length);
 
   return (
     <>

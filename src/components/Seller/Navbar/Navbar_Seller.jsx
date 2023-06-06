@@ -78,6 +78,7 @@ export default function SellerNavbar() {
       .signOut()
       .then(() => {
         // Sign-out successful.
+        navigate("/");
       })
       .catch((error) => {
         // An error happened.
@@ -98,14 +99,12 @@ export default function SellerNavbar() {
 
         <MDBNavbarNav>
           <MDBNavbarItem className=" justify-content-stat ms-3">
-            <MDBNavbarLink href="#">
-              <h3>Selle Dashboard</h3>
-            </MDBNavbarLink>
+          <h3>Seller Dashboard</h3>
           </MDBNavbarItem>
 
           {/* New Oade */}
           <MDBNavbarItem className=" navbar-collapse justify-content-end me-3">
-            <MDBNavbarLink href="#">
+            <MDBNavbarLink href="">
               <MDBBtn className="btn-success " onClick={neworders}>
                 New Oders 
                 <MDBBadge pill color="warning" className="ms-2">
@@ -131,7 +130,7 @@ export default function SellerNavbar() {
           <img
             style={{ width: 60, height: 60 }}
             className="square rounded-circle border border-3"
-            src={userAvater}
+            src={userData?.profilePictureURL}
             alt="user"
           />
         </button>
@@ -158,7 +157,7 @@ export default function SellerNavbar() {
                 <img
                   style={{ width: 60, height: 60 }}
                   className="square rounded-circle border border-3"
-                  src={userAvater}
+                  src={userData?.profilePictureURL}
                   alt="user"
                 />
                 <h2 className="mt-3">{userData?.name}</h2>
