@@ -58,6 +58,7 @@ export default function Navbar() {
       .signOut()
       .then(() => {
         // Sign-out successful.
+        navigate("/");
       })
       .catch((error) => {
         // An error happened.
@@ -102,7 +103,7 @@ export default function Navbar() {
           <img
             style={{ width: 60, height: 60 }}
             className="square rounded-circle border border-3"
-            src={userAvater}
+            src={userData?.profilePictureURL}
             alt="user"
           />
         </button>
@@ -129,7 +130,7 @@ export default function Navbar() {
                 <img
                   style={{ width: 60, height: 60 }}
                   className="square rounded-circle border border-3"
-                  src={userAvater}
+                  src={userData?.profilePictureURL}
                   alt="user"
                 />
                 <h2 className="mt-3">{userData?.name}</h2>

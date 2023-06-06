@@ -10,6 +10,7 @@ export const SellerProductProvider = (props) => {
   const [userEmail, setUserEmail] = useState(null);
   const firestore = getFirestore();
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       setUser(user);

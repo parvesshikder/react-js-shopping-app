@@ -28,6 +28,8 @@ function AddProduct() {
   const [sellerName, setSellerName] = useState("");
   const [sellerAddress, setSellerAddress] = useState("");
   const [sellerPhone, setSellerPhone] = useState("");
+  const [category, setCategory] = useState("");
+
   const formHandler = (e) => {
     e.preventDefault();
     const file = e.target[0].files[0];
@@ -63,6 +65,7 @@ function AddProduct() {
               sellerAddress,
               sellerPhone,
               userEmail,
+              category,
               status : "unsold",
               date: new Date().toLocaleString('en-US', {
                 day: 'numeric',
@@ -83,6 +86,7 @@ function AddProduct() {
             setSellerName("");
             setSellerAddress("");
             setSellerPhone("");
+            setCategory("");
           } catch (error) {
             console.error("Error adding product to Firestore: ", error);
           }
@@ -123,6 +127,19 @@ function AddProduct() {
                 }}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+
+<br />
+              <MDBInput
+                type="textarea"
+                label="Product Category"
+                maxLength={6000}
+                style={{
+                  height: '100px',
+                }}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
                 required
               />
 

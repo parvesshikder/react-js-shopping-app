@@ -13,12 +13,14 @@ import { CartProvider } from "./components/Buyer/Cart/CartContext";
 import { SellerProductProvider } from "./components/Seller/SellerProductContext";
 import {  MyOrderProvider } from "./components/Buyer/Order_History/MyOrderContext";
 import { NewOrderCountProvider } from "./components/Seller/New orders/NewOrderCountContext";
+import { AdminProvider } from "./components/Admin/AdminContext"; 
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
 
 ReactDOM.render(
   <React.StrictMode>
+    <AdminProvider>
     <ProductProvider>
       <SellerProductProvider>
         <CartProvider>
@@ -34,6 +36,7 @@ ReactDOM.render(
         </CartProvider>
       </SellerProductProvider>
     </ProductProvider>
+    </AdminProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

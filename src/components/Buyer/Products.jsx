@@ -14,6 +14,7 @@ import {
   MDBBtn,
   MDBRipple,
   MDBCardFooter,
+  MDBIcon,
 } from "mdb-react-ui-kit";
 
 function Products() {
@@ -25,6 +26,12 @@ function Products() {
   const navigate = useNavigate();
   const viewCartPage = () => {
     navigate("/product-cart");
+  };
+
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleHeartClick = () => {
+    setIsLiked(!isLiked);
   };
 
   if (!products) {
@@ -95,9 +102,9 @@ function Products() {
 
   return (
     <MDBContainer fluid className="my-5 text-center">
-      <h4 className="mt-4 mb-5">
+      {/* <h4 className="mt-4 mb-5">
         <strong>Available Products</strong>
-      </h4>
+      </h4> */}
 
       <div className="col-md-8 mx-auto w-25 mt-4 mb-5">
         <div className="input-group">
@@ -127,43 +134,49 @@ function Products() {
           const isInCart = cartItems.some((item) => item.id === product.id);
 
           return (
-            <MDBCol key={product.id} sm="6" md="4" lg="3" className="mb-4">
+            <MDBCol md="6" lg="3" className="mb-4 mb-lg-0">
               <MDBCard>
-                {/* <Link to={`/products/${product.id}`}> */}
-                  <MDBRipple
-                    rippleColor="light"
-                    rippleTag="div"
-                    className="bg-image rounded hover-zoom"
-                  >
-                    <MDBCardImage
-                      src={product.image}
-                      fluid
-                      className="w-100"
-                      style={{
-                        width: "100%",
-                        height: "250px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </MDBRipple>
-                  <MDBCardBody>
-                   
-                      <h5 className="card-title mb-3">{product.name}</h5>
+              
+                <MDBCardImage src={product.image} position="top" alt="Laptop" />
+                <div className="d-flex justify-content-between p-3">
+                  <p className="lead mb-0">
+                    {product.description.split(" ").slice(0, 6).join(" ")}
+                  </p>
+                </div>
+
+                <MDBCardBody>
+                  
+                  <div className="d-flex justify-content-between">
+                    <p className="small">
+                      <a href="#!" className="text-muted">
+                        {product.category}
+                      </a>
+                    </p>
+
                     
-                    
-                      <p>{product.description}</p>
-                    
-                    <h6 className="mb-3 h4">
-                      <MDBBadge color="success" pill>
-                        RM{product.price}
-                      </MDBBadge>
-                    </h6>
-                    <br />
-                    <p>Seller Name: {product.sellerName} </p>
-                    <p>Seller Phone:  {product.sellerPhone}</p>
-                    <p>Seller Address: {product.sellerAddress} </p>
-                  </MDBCardBody>
-                {/* </Link> */}
+                  </div>
+
+                  <div className="d-flex justify-content-between mb-3">
+                    <h5 className="mb-0">{product.name}</h5>
+                    <h5 className="text-dark mb-0">RM{product.price}</h5>
+                  </div>
+
+                  <div class="d-flex justify-content-between mb-2">
+                    <p class="text-muted mb-0">
+                      Location:{" "}
+                      <span class="fw-bold">{product.sellerAddress}</span>
+                    </p>
+                    <div class="ms-auto text-warning">
+                      <MDBIcon
+                        fas
+                        icon="heart"
+                        className={isLiked ? "text-danger" : ""}
+                        onClick={handleHeartClick}
+                      />
+                    </div>
+                  </div>
+                </MDBCardBody>
+                
                 <MDBCardFooter>
                   <div className="d-flex justify-content-between align-items-center pb-1 mb-2">
                     {!isInCart ? (
@@ -185,20 +198,24 @@ function Products() {
                         Remove from Cart
                       </MDBBtn>
                     )}
-
+                    
+                    <Link to={`/product-details/${product.id}`}> 
                     <MDBBtn
                       color="primary"
-                      onClick={() => {
-                        addItem({ ...product });
-                        viewCartPage();
-                      }}
+                      
                     >
-                      Buy now
+                      
+                        Details
+                   
+
                     </MDBBtn>
+                    </Link>
                   </div>
                 </MDBCardFooter>
               </MDBCard>
             </MDBCol>
+
+            
           );
         })}
       </MDBRow>

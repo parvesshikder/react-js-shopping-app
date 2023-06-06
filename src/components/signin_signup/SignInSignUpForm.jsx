@@ -10,7 +10,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Context from "./Context";
-import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection,getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import {
@@ -32,21 +32,31 @@ import {
   MDBTabsContent,
   MDBTabsPane,
 } from "mdb-react-ui-kit";
+import { storage } from "../../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export default function SignInSignUpForm() {
   const [loginRegisterActive, setLoginRegisterActive] = useState("login");
   const [selectedValue, setSelectedValue] = useState("Buyer");
-  const { role, setRoleValue, emailVerified, setEmailVerified  } = useContext(Context);
+  const { role, setRoleValue, emailVerified, setEmailVerified } =
+    useContext(Context);
   const firestore = getFirestore();
+  const navigate = useNavigate();
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
   }
+
+  
 
   //RESET PASS
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [resetEmailError, setResetEmailError] = useState(null);
+
+  //file upload
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureURL, setProfilePictureURL] = useState("");
 
   const handleResetPassword = async () => {
     try {
@@ -88,16 +98,42 @@ export default function SignInSignUpForm() {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  
   const onLogin = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        if (userCredential.user.emailVerified) {
-          setRoleValue(selectedValue);
-          setEmailVerified(true);
-          handleSnackbarLogibSuccess();
+        const user = userCredential.user;
+        // Check if user's email is verified
+        if (user.emailVerified) {
+          // Get the user's account type from Firestore
+          const userRef = doc(collection(firestore, "users"), user.uid);
+          getDoc(userRef)
+            .then((docSnap) => {
+              if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const accountType = userData.accountType;
+                setRoleValue(accountType);
+                setEmailVerified(true);
+  
+                // Navigate to the appropriate dashboard based on account type
+                if (accountType === "Buyer" && selectedValue  === "Buyer") {
+                  navigate("/buyer-dashboard");
+                } else if (accountType === "Seller" && selectedValue  === "Seller") {
+                  navigate("/seller-dashboard");
+                } else if (accountType == "Admin" && selectedValue  === "Admin" ) {
+                  navigate("/admin-dashboard");
+                }else{
+                  handleSnackbarLoginFailed();
+                }
+  
+                handleSnackbarLogibSuccess();
+              } else {
+                handleSnackbarLoginFailed();
+              }
+            })
+            .catch((error) => {
+              handleSnackbarLoginFailed();
+            });
         } else {
           handleSnackbarLoginFailed();
         }
@@ -110,34 +146,53 @@ export default function SignInSignUpForm() {
 
   const onSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-      .then(async (userCredential) => {
-        setRoleValue(selectedValue);
-        const user = userCredential.user;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setRoleValue(selectedValue);
+      const user = userCredential.user;
 
-        //email varification
-        await sendEmailVerification(user);
+      //email varification
+      await sendEmailVerification(user);
 
+      // Upload profile picture if selected
+      if (profilePicture) {
+        const storageRef = ref(storage, `profilePictures/${user.uid}`);
+        await uploadBytes(storageRef, profilePicture);
+        const downloadURL = await getDownloadURL(storageRef);
+        setProfilePictureURL(downloadURL);
 
-
-        // Store user data in Firestore
+        // Store the image URL in Firestore
         const userRef = doc(collection(firestore, "users"), user.uid);
         await setDoc(userRef, {
           name: name,
           email: email,
           phone: phone,
+          profilePictureURL: downloadURL, // Add profile picture URL to Firestore document
+          accountType: selectedValue,
         });
+      } else {
+        // Store user data in Firestore without profile picture
+        const userRef = doc(collection(firestore, "users"), user.uid);
+        await setDoc(userRef, {
+          name: name,
+          email: email,
+          phone: phone,
+          accountType: selectedValue,
+        });
+      }
 
-        handleSnackbarSignupSuccess();
-      })
-      .catch((error) => {
-        handleSnackbarSignUpFailed();
-      });
+      handleSnackbarSignupSuccess();
+      setLoading(false);
+    } catch (error) {
+      handleSnackbarSignUpFailed();
+      setLoading(false);
+    }
   };
 
   return (
@@ -199,6 +254,13 @@ export default function SignInSignUpForm() {
                       active={selectedValue === "Seller"}
                     >
                       Seller
+                    </MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Admin")}
+                      active={selectedValue === "Admin"}
+                    >
+                      Admin
                     </MDBDropdownItem>
                   </MDBDropdownMenu>
                 </MDBDropdown>
@@ -294,6 +356,17 @@ export default function SignInSignUpForm() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
 
+                <p>Upload Profile Picture</p>
+                <MDBInput
+                  className="mb-4"
+                  type="file"
+                  id="profilePicture"
+                  hint="Profile Picture"
+                  accept="image/*"
+                  onChange={(e) => setProfilePicture(e.target.files[0])}
+                  required
+                />
+
                 <MDBDropdown className="mb-4">
                   <MDBDropdownToggle tag="a" className="btn btn-primary">
                     {selectedValue}
@@ -313,6 +386,13 @@ export default function SignInSignUpForm() {
                     >
                       Seller
                     </MDBDropdownItem>
+                    {/* <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Admin")}
+                      active={selectedValue === "Admin"}
+                    >
+                      Admin
+                    </MDBDropdownItem> */}
                   </MDBDropdownMenu>
                 </MDBDropdown>
 
@@ -379,7 +459,8 @@ export default function SignInSignUpForm() {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MuiAlert onClose={handleSnackbarSignupSuccess} severity="success">
-        Congratulations! Your account has been created successfully. Please check your email to verify your account.
+          Congratulations! Your account has been created successfully. Please
+          check your email to verify your account.
         </MuiAlert>
       </Snackbar>
 
