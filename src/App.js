@@ -17,6 +17,7 @@ import Cart from "./components/Buyer/Cart/Cart";
 import ProductCart from "./components/Buyer/Cart/ProductCard";
 import AddProduct from "./components/Seller/Add Product/AddProduct";
 import AddNewProduct from "./components/Seller/Add Product/AddNewProduct";
+import AdminDashboard from "./components/Admin/Admin_Dashboard";
 
 export default function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -25,13 +26,6 @@ export default function App() {
 
   console.log(emailVerified);
 
-  // useEffect(() => {
-  //   if (role === "Seller" && emailVerified === true) {
-  //     <Navigate to="/seller-dashboard" replace />;
-  //   } else if (role === "Buyer" && emailVerified === true) {
-  //     <Navigate to="/buyer-dashboard" replace />;
-  //   }
-  // }, [role, emailVerified]);
 
   if (loading) {
     return (
@@ -61,7 +55,8 @@ export default function App() {
         <Route path="/new-orders" element={<NewOrders />} />
         <Route path="/product-cart" element={<ProductCart />} />
         <Route path="/add-product" element={<AddNewProduct />} />
-        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/product-details/:productId" element={<ProductDetails />} />
       </Routes>
     </div>
   );

@@ -10,7 +10,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Context from "./Context";
-import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection,getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import {
@@ -45,6 +45,8 @@ export default function SignInSignUpForm() {
   function handleLoginRegisterClick(activeTab) {
     setLoginRegisterActive(activeTab);
   }
+
+  
 
   //RESET PASS
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -100,20 +102,38 @@ export default function SignInSignUpForm() {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        if (userCredential.user.emailVerified) {
-          setRoleValue(selectedValue);
-          setEmailVerified(true);
-
-          if (selectedValue == "Buyer") {
-            navigate("/buyer-dashboard");
-          } else if (selectedValue == "Seller") {
-            navigate("/seller-dashboard");
-          } else if (selectedValue == "Admin") {
-            navigate("/admin-dashboard");
-          }
-
-          handleSnackbarLogibSuccess();
+        const user = userCredential.user;
+        // Check if user's email is verified
+        if (user.emailVerified) {
+          // Get the user's account type from Firestore
+          const userRef = doc(collection(firestore, "users"), user.uid);
+          getDoc(userRef)
+            .then((docSnap) => {
+              if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const accountType = userData.accountType;
+                setRoleValue(accountType);
+                setEmailVerified(true);
+  
+                // Navigate to the appropriate dashboard based on account type
+                if (accountType === "Buyer" && selectedValue  === "Buyer") {
+                  navigate("/buyer-dashboard");
+                } else if (accountType === "Seller" && selectedValue  === "Seller") {
+                  navigate("/seller-dashboard");
+                } else if (accountType == "Admin" && selectedValue  === "Admin" ) {
+                  navigate("/admin-dashboard");
+                }else{
+                  handleSnackbarLoginFailed();
+                }
+  
+                handleSnackbarLogibSuccess();
+              } else {
+                handleSnackbarLoginFailed();
+              }
+            })
+            .catch((error) => {
+              handleSnackbarLoginFailed();
+            });
         } else {
           handleSnackbarLoginFailed();
         }
@@ -122,6 +142,7 @@ export default function SignInSignUpForm() {
         handleSnackbarLoginFailed();
       });
   };
+  
 
   const onSignup = async (e) => {
     e.preventDefault();
@@ -153,6 +174,7 @@ export default function SignInSignUpForm() {
           email: email,
           phone: phone,
           profilePictureURL: downloadURL, // Add profile picture URL to Firestore document
+          accountType: selectedValue,
         });
       } else {
         // Store user data in Firestore without profile picture
@@ -161,6 +183,7 @@ export default function SignInSignUpForm() {
           name: name,
           email: email,
           phone: phone,
+          accountType: selectedValue,
         });
       }
 
@@ -231,6 +254,13 @@ export default function SignInSignUpForm() {
                       active={selectedValue === "Seller"}
                     >
                       Seller
+                    </MDBDropdownItem>
+                    <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Admin")}
+                      active={selectedValue === "Admin"}
+                    >
+                      Admin
                     </MDBDropdownItem>
                   </MDBDropdownMenu>
                 </MDBDropdown>
@@ -356,6 +386,13 @@ export default function SignInSignUpForm() {
                     >
                       Seller
                     </MDBDropdownItem>
+                    {/* <MDBDropdownItem
+                      link
+                      onClick={() => setSelectedValue("Admin")}
+                      active={selectedValue === "Admin"}
+                    >
+                      Admin
+                    </MDBDropdownItem> */}
                   </MDBDropdownMenu>
                 </MDBDropdown>
 
