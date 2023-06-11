@@ -136,6 +136,8 @@ export default function Navbar() {
                 <h2 className="mt-3">{userData?.name}</h2>
                 <p className="mt-3">{userData?.email}</p>
                 <p className="mt-3">{userData?.phone}</p>
+                <p className="mt-3 fas fa-map-marker-alt"> {" "}{userData?.address}</p>
+                <br />
                 <MDBBtn onClick={viewOrderPage}>Order history</MDBBtn>
               </div>
             </MDBModalBody>

@@ -74,6 +74,7 @@ export default function SignInSignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [address, setAddress] = useState("");
 
   const [openSnackbarLS, setOpenSnackbarLS] = useState(false);
   const [openSnackbarLF, setOpenSnackbarLF] = useState(false);
@@ -174,6 +175,7 @@ export default function SignInSignUpForm() {
           email: email,
           phone: phone,
           profilePictureURL: downloadURL, // Add profile picture URL to Firestore document
+          address: address,
           accountType: selectedValue,
         });
       } else {
@@ -183,6 +185,7 @@ export default function SignInSignUpForm() {
           name: name,
           email: email,
           phone: phone,
+          address: address,
           accountType: selectedValue,
         });
       }
@@ -354,6 +357,15 @@ export default function SignInSignUpForm() {
                   required
                   title="Please enter your password"
                   onChange={(e) => setPassword(e.target.value)}
+                />
+                <MDBInput
+                  className="mb-4"
+                  type="address"
+                  id="address"
+                  label="Address"
+                  required
+                  title="Please enter your address"
+                  onChange={(e) => setAddress(e.target.value)}
                 />
 
                 <p>Upload Profile Picture</p>

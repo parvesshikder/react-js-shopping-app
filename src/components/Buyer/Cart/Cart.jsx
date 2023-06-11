@@ -25,8 +25,9 @@ import Context from "../../signin_signup/Context";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 
 const Cart = () => {
-  const { cartItems, removeItem, totalAmount, clearCart } =
-    useContext(CartContext);
+  const { cartItems, removeItem, totalAmount, clearCart } = useContext(
+    CartContext
+  );
 
   const { userData } = useContext(Context);
   const [address, setAddress] = useState("");
@@ -42,7 +43,7 @@ const Cart = () => {
     navigate("/order-history-page");
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (item) => {
     if (!address) {
       // If address is not provided, show the error message
       setAddressError(true);
@@ -50,21 +51,17 @@ const Cart = () => {
     }
 
     try {
-      // Update the status of each product to "sold"
-      for (const item of cartItems) {
-        const updatedProduct = {
-          ...item,
-          status: "pending",
-          buyerName: userData?.name,
-          buyerEmail: userData?.email,
-          buyerPhone: userData?.phone,
-          buyerAddress: address,
-        };
-        await updateProductInFirestore(item.id, updatedProduct);
-      }
+      const updatedProduct = {
+        ...item,
+        status: "pending",
+        buyerName: userData?.name,
+        buyerEmail: userData?.email,
+        buyerPhone: userData?.phone,
+        buyerAddress: address,
+      };
+      await updateProductInFirestore(item.id, updatedProduct);
 
-      // Call clearCart function to clear the cart items
-      clearCart();
+      removeItem(item.id);
       toggleShow();
       viewOrderPage();
 
@@ -88,9 +85,12 @@ const Cart = () => {
   };
 
   const [topRightModal, setTopRightModal] = useState(false);
-  const [userDetails, setUserDetails] = useState({});
+  const [selectedItem, setSelectedItem] = useState({});
 
-  const toggleShow = () => setTopRightModal(!topRightModal);
+  const toggleShow = (item) => {
+    setSelectedItem(item);
+    setTopRightModal(!topRightModal);
+  };
 
   return (
     <div>
@@ -101,37 +101,32 @@ const Cart = () => {
             cartItems.map((item) => (
               <MDBCol key={item.id}>
                 <MDBCard>
-                  <Link to={`/products/${item.id}`}>
-                    <MDBRipple
-                      rippleColor="light"
-                      rippleTag="div"
-                      className="bg-image rounded hover-zoom"
-                    >
-                      <MDBCardImage
-                        src={item.image}
-                        fluid
-                        className="w-100"
-                        style={{
-                          width: "100%",
-                          height: "250px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </MDBRipple>
-                    <MDBCardBody>
-                      <a href="#!" className="text-reset">
-                        <h5 className="card-title mb-3">{item.name}</h5>
-                      </a>
-                      <a href="#!" className="text-reset">
-                        <p>{item.description}</p>
-                      </a>
-                      <h6 className="mb-3 h4">
-                        <MDBBadge color="success" pill>
-                          RM{item.price}
-                        </MDBBadge>
-                      </h6>
-                    </MDBCardBody>
-                  </Link>
+                  <MDBRipple
+                    rippleColor="light"
+                    rippleTag="div"
+                    className="bg-image rounded hover-zoom"
+                  >
+                    <MDBCardImage
+                      src={item.image}
+                      fluid
+                      className="w-100"
+                      style={{
+                        width: "100%",
+                        height: "250px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </MDBRipple>
+                  <MDBCardBody>
+                    <a href="#!" className="text-reset">
+                      <h5 className="card-title mb-3">{item.name}</h5>
+                    </a>
+                    <h6 className="mb-3 h4">
+                      <MDBBadge color="success" pill>
+                        RM{item.price}
+                      </MDBBadge>
+                    </h6>
+                  </MDBCardBody>
                   <MDBCardFooter>
                     <div className="d-flex justify-content-center align-items-center pb-1 mb-2">
                       <MDBBtn
@@ -139,6 +134,13 @@ const Cart = () => {
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         Remove
+                      </MDBBtn>
+                      <MDBBtn
+                        color="primary"
+                        onClick={() => toggleShow(item)}
+                        style={{ marginLeft: "0.5rem" }}
+                      >
+                        Checkout
                       </MDBBtn>
                     </div>
                   </MDBCardFooter>
@@ -149,16 +151,6 @@ const Cart = () => {
             <p>Your cart is empty</p>
           )}
         </MDBRow>
-        {cartItems.length > 0 && (
-          <div className="text-center mt-4">
-            <MDBBtn color="primary" onClick={toggleShow}>
-              Checkout
-            </MDBBtn>
-
-            <br />
-            <br />
-          </div>
-        )}
       </MDBContainer>
 
       <MDBModal
@@ -184,7 +176,9 @@ const Cart = () => {
                     <label htmlFor="address">Address</label>
                     <input
                       type="text"
-                      className={`form-control ${addressError && "is-invalid"}`}
+                      className={`form-control ${
+                        addressError && "is-invalid"
+                      }`}
                       id="address"
                       style={{ marginBottom: "1rem" }}
                       onChange={(e) => setAddress(e.target.value)}
@@ -202,7 +196,7 @@ const Cart = () => {
                 outline
                 color="info"
                 style={{ marginRight: "0.5rem" }}
-                onClick={handlePlaceOrder}
+                onClick={() => handlePlaceOrder(selectedItem)}
               >
                 Place Order
               </MDBBtn>

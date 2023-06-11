@@ -28,11 +28,7 @@ function Products() {
     navigate("/product-cart");
   };
 
-  const [isLiked, setIsLiked] = useState(false);
 
-  const handleHeartClick = () => {
-    setIsLiked(!isLiked);
-  };
 
   if (!products) {
     return <>Error</>;
@@ -137,7 +133,22 @@ function Products() {
             <MDBCol md="6" lg="3" className="mb-4 mb-lg-0">
               <MDBCard>
               
-                <MDBCardImage src={product.image} position="top" alt="Laptop" />
+              <MDBRipple
+                    rippleColor="light"
+                    rippleTag="div"
+                    className="bg-image rounded hover-zoom"
+                  >
+                    <MDBCardImage
+                      src={product.image}
+                      fluid
+                      className="w-100"
+                      style={{
+                        width: "100%",
+                        height: "250px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </MDBRipple>
                 <div className="d-flex justify-content-between p-3">
                   <p className="lead mb-0">
                     {product.description.split(" ").slice(0, 6).join(" ")}
@@ -149,7 +160,7 @@ function Products() {
                   <div className="d-flex justify-content-between">
                     <p className="small">
                       <a href="#!" className="text-muted">
-                        {product.category}
+                      Category : {product.category}
                       </a>
                     </p>
 
@@ -162,18 +173,12 @@ function Products() {
                   </div>
 
                   <div class="d-flex justify-content-between mb-2">
-                    <p class="text-muted mb-0">
-                      Location:{" "}
-                      <span class="fw-bold">{product.sellerAddress}</span>
+                    <p class="text-muted mb-0" className="fas fa-map-marker-alt	">
+                    
+                    :{" "}
+                      <span class="fw-bold">{ product.sellerAddress}</span>
                     </p>
-                    <div class="ms-auto text-warning">
-                      <MDBIcon
-                        fas
-                        icon="heart"
-                        className={isLiked ? "text-danger" : ""}
-                        onClick={handleHeartClick}
-                      />
-                    </div>
+                   
                   </div>
                 </MDBCardBody>
                 

@@ -163,6 +163,8 @@ export default function SellerNavbar() {
                 <h2 className="mt-3">{userData?.name}</h2>
                 <p className="mt-3">{userData?.email}</p>
                 <p className="mt-3">{userData?.phone}</p>
+                <p className="mt-3 fas fa-map-marker-alt"> {" "}{userData?.address}</p>
+                <br />
               </div>
             </MDBModalBody>
             <MDBModalFooter>
