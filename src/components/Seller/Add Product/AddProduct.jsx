@@ -36,7 +36,7 @@ function AddProduct() {
     uploadFiles(file);
   };
 
-  const uploadFiles = (file) => { 
+  const uploadFiles = (file) => {
     //
     if (!file) return;
     const sotrageRef = ref(storage, `files/${file.name}`);
@@ -66,14 +66,16 @@ function AddProduct() {
               sellerPhone,
               userEmail,
               category,
-              status : "unsold",
-              date: new Date().toLocaleString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
+             productStatus : "",
+             review:"",
+              status: "unsold",
+              date: new Date().toLocaleString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
               }),
               buyerName: "none",
             });
@@ -123,21 +125,18 @@ function AddProduct() {
                 label="Product Description"
                 maxLength={6000}
                 style={{
-                  height: '100px',
+                  height: "100px",
                 }}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
               />
 
-<br />
+              <br />
               <MDBInput
                 type="textarea"
                 label="Product Category"
                 maxLength={6000}
-                style={{
-                  height: '100px',
-                }}
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
@@ -167,7 +166,7 @@ function AddProduct() {
                 required
               />
               <br />
-              <MDBBtn color="primary" type="submit" >
+              <MDBBtn color="primary" type="submit">
                 Add Product
               </MDBBtn>
             </form>

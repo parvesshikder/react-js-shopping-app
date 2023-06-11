@@ -25,6 +25,7 @@ export default function ProductHistory() {
             <th scope="col">Product details</th>
             <th scope="col">Price</th>
             <th scope="col">Status</th>
+            <th scope="col">Buyer Review</th>
             
           </tr>
         </MDBTableHead>
@@ -52,6 +53,10 @@ export default function ProductHistory() {
               </td>
               <td>
                 <p className="fw-normal mb-1">{product.status}</p>
+              </td>
+
+              <td>
+             < p className="fw-normal mb-1">{product.review === "" ? "Waiting for the buyer to provide their review." : product.review}</p>
               </td>
               
             </tr>

@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { SellerProductContext } from "./SellerProductContext";
 
-
 import {
   getFirestore,
   collection,
@@ -32,7 +31,6 @@ import {
 import firebase from "../../firebase";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-
 
 function SellerProducts() {
   const [products, setProducts] = useContext(SellerProductContext);
@@ -129,7 +127,7 @@ function SellerProducts() {
         {unsoldProducts.map((product) => (
           <MDBCol key={product.id} sm="6" md="4" lg="3" className="mb-4">
             <MDBCard>
-              <Link to={`/products/${product.id}`}>
+             
                 <MDBRipple
                   rippleColor="light"
                   rippleTag="div"
@@ -159,7 +157,7 @@ function SellerProducts() {
                     </MDBBadge>
                   </h6>
                 </MDBCardBody>
-              </Link>
+              
               <MDBCardFooter>
                 <div className="d-flex justify-content-between align-items-center pb-1 mb-2">
                   <MDBIcon
@@ -167,7 +165,7 @@ function SellerProducts() {
                     size="lg"
                     onClick={() => handleEditProduct(product.id)}
                   />
-                  
+
                   <MDBBtn
                     color="primary"
                     onClick={() => handleRemoveProduct(product.id)}
@@ -257,6 +255,15 @@ function EditProductPopup({
                 />
                 <br />
                 <MDBInput
+                  type="textarea"
+                  label="Product Category"
+                  name="category"
+                  value={updatedProduct.category}
+                  onChange={handleChange}
+                  required
+                />
+                <br />
+                <MDBInput
                   label="Seller Name"
                   name="sellerName"
                   value={updatedProduct.sellerName}
@@ -292,22 +299,20 @@ function EditProductPopup({
               </form>
             </MDBCol>
           </MDBRow>
-          
         </MDBContainer>
-
-        
       </MDBModalBody>
       {updateProducts !== null && (
-      <Snackbar
-        open={updateProducts !== null}
-        autoHideDuration={6000}
-        onClose={() => setUpdateProducts(null)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <MuiAlert onClose={() => setUpdateProducts(null)} severity="error">
-          {updateProducts}
-        </MuiAlert>
-      </Snackbar>)}
+        <Snackbar
+          open={updateProducts !== null}
+          autoHideDuration={6000}
+          onClose={() => setUpdateProducts(null)}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MuiAlert onClose={() => setUpdateProducts(null)} severity="error">
+            {updateProducts}
+          </MuiAlert>
+        </Snackbar>
+      )}
     </MDBModal>
   );
 }

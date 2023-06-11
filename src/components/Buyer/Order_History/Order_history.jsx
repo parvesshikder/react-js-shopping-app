@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   MDBBadge,
   MDBBtn,
   MDBTable,
   MDBTableHead,
   MDBTableBody,
+  MDBInput,
 } from "mdb-react-ui-kit";
 import Navbar from "../Navbar/Navbar";
 import { ProductContext } from "../ProductContext";
@@ -19,11 +20,15 @@ export default function OrderHistory() {
   const myproducts = useContext(MyOrderContext);
   const { userData } = useContext(Context);
   const firestore = getFirestore();
+  const [review, setReview] = useState("");
 
   // Filter products based on status and buyerName
   const filteredProducts = products.filter(
     (product) =>
-      product.status === "pending" && product.buyerEmail === userData?.email
+      product.status === "pending" ||
+      (product.status === "sold" &&
+        product.buyerEmail === userData?.email &&
+        product.productStatus !== "ReceivedByBuyer")
   );
 
   const filteredMyProducts = myproducts.filter(
@@ -63,6 +68,7 @@ export default function OrderHistory() {
       // Update the status of the product to "sold" in Firebase Firestore
       await updateDoc(doc(firestore, "products", productId), {
         status: "sold",
+        productStatus: "ReceivedByBuyer",
       });
 
       // Get the received product details
@@ -73,11 +79,30 @@ export default function OrderHistory() {
       // Store the received order in "myorders" collection
       await addDoc(collection(firestore, "myorders"), {
         ...receivedProduct,
-        status: "sold",
+        productStatus: "Received", // Updated status value
       });
 
       // Display a success message or perform any additional actions
       console.log("Order received successfully!");
+    } catch (error) {
+      console.error("Error receiving order:", error);
+      // Display an error message or handle the error as needed
+    }
+  };
+
+  const updateReview = async (productId) => {
+    try {
+      // Update the status of the product to "sold" in Firebase Firestore
+      await updateDoc(doc(firestore, "products", productId), {
+        review: review,
+      });
+
+      await updateDoc(doc(firestore, "myorders", productId), {
+        review: review,
+      });
+
+      // Display a success message or perform any additional actions
+      console.log("Reviewed successfully!");
     } catch (error) {
       console.error("Error receiving order:", error);
       // Display an error message or handle the error as needed
@@ -95,6 +120,7 @@ export default function OrderHistory() {
             <th scope="col">Price</th>
             <th scope="col">Seller Details</th>
             <th scope="col">Action</th>
+            <th scope="col">Review</th>
           </tr>
         </MDBTableHead>
         <MDBTableBody>
@@ -138,9 +164,42 @@ export default function OrderHistory() {
                   rounded
                   size="sm"
                   onClick={() => receivedOrder(product.id)}
+                  disabled={product.status === "pending"}
                 >
                   Received
                 </MDBBtn>
+              </td>
+              <td>
+                {product.status === "sold" ? (
+                  <>
+                    {product.review === "" ? (
+                      <>
+                        {" "}
+                        <MDBInput
+                          label="Write a Review"
+                          value={review}
+                          onChange={(e) => setReview(e.target.value)}
+                          required
+                        />{" "}
+                        <br />{" "}
+                        <MDBBtn
+                          color="primary"
+                          className="btn btn-primary btn-sm"
+                          rounded
+                          size="sm"
+                          onClick={() => updateReview(product.id)}
+                        >
+                          {" "}
+                          Submit{" "}
+                        </MDBBtn>{" "}
+                      </>
+                    ) : (
+                      <p>{product.review}</p>
+                    )}
+                  </>
+                ) : (
+                  "The order is currently pending acceptance from the seller."
+                )}
               </td>
             </tr>
           ))}
