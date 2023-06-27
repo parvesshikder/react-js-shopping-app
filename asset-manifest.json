@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/RifadulIslam/utmonlineoldmarket.github.io/static/css/main.1e4a7b6d.css",
+    "main.js": "/RifadulIslam/utmonlineoldmarket.github.io/static/js/main.23c918a9.js",
+    "static/media/utm.png": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/utm.97975d6a680c60d6e380.png",
+    "static/media/fa-solid-900.ttf": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-solid-900.4a2cd718d7031b732e76.ttf",
+    "static/media/fa-brands-400.ttf": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-brands-400.150de8eaa454d669c405.ttf",
+    "static/media/user.webp": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/user.9bbcbae413ad695e0ca6.webp",
+    "static/media/fa-solid-900.woff2": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-solid-900.bb975c966c37455a1bc3.woff2",
+    "static/media/fa-brands-400.woff2": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-brands-400.e033a13ee751afc1860c.woff2",
+    "static/media/fa-regular-400.ttf": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-regular-400.d87474231f4192884802.ttf",
+    "static/media/fa-regular-400.woff2": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-regular-400.3223dc79c1adee56370b.woff2",
+    "static/media/logo.png": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/logo.7767ad032108bfdd271a.png",
+    "static/media/fa-v4compatibility.ttf": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-v4compatibility.0e3a648be390bd8cb094.ttf",
+    "static/media/fa-v4compatibility.woff2": "/RifadulIslam/utmonlineoldmarket.github.io/static/media/fa-v4compatibility.68577e40f3e70067b5da.woff2",
+    "index.html": "/RifadulIslam/utmonlineoldmarket.github.io/index.html",
+    "main.1e4a7b6d.css.map": "/RifadulIslam/utmonlineoldmarket.github.io/static/css/main.1e4a7b6d.css.map",
+    "main.23c918a9.js.map": "/RifadulIslam/utmonlineoldmarket.github.io/static/js/main.23c918a9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1e4a7b6d.css",
+    "static/js/main.23c918a9.js"
+  ]
+}
